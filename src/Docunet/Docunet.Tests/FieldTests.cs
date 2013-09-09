@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Docunet;
 
@@ -143,6 +144,13 @@ namespace Docunet.Tests
             dummy2.Foo = "test value string";
             dummy2.Bar = 54321;
             dummy2.Baz = dummy1;
+            dummy2.StringList = new List<string> { "one", "two", "three" };
+            dummy2.ObjectList = new List<Dummy> 
+            {
+                new Dummy() { Foo = "one", Bar = 1 },
+                new Dummy() { Foo = "two", Bar = 2 },
+                new Dummy() { Foo = "three", Bar = 3 }
+            };
             
             var document = new Docunet()
                 .Object("foo", dummy1)
@@ -191,6 +199,13 @@ namespace Docunet.Tests
             dummy2.Foo = "test value string";
             dummy2.Bar = 54321;
             dummy2.Baz = dummy1;
+            dummy2.StringList = new List<string> { "one", "two", "three" };
+            dummy2.ObjectList = new List<Dummy> 
+            {
+                new Dummy() { Foo = "one", Bar = 1 },
+                new Dummy() { Foo = "two", Bar = 2 },
+                new Dummy() { Foo = "three", Bar = 3 }
+            };
             
             var doc1 = Docunet.ToDocument(dummy1);
             var doc2 = Docunet.ToDocument(dummy2);
@@ -201,6 +216,12 @@ namespace Docunet.Tests
             
             Assert.AreEqual(doc1, document.Document("foo"));
             Assert.AreEqual(doc2, document.Document("bar.baz"));
+            
+            var stringList = document.List<string>("bar.baz.StringList");
+            var objectList = document.List<Docunet>("bar.baz.ObjectList");
+            
+            Assert.AreEqual(dummy2.StringList, stringList);
+            Assert.AreEqual(Docunet.ToList(dummy2.ObjectList), objectList);
         }
         
         [Test()]

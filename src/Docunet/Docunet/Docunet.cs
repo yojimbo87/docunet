@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Docunet
@@ -147,7 +149,7 @@ namespace Docunet
         
         public List<T> List<T>(string fieldPath)
         {
-            return (List<T>)GetField(fieldPath);
+            return ((IEnumerable)GetField(fieldPath)).Cast<T>().ToList();
         }
         
         private object GetField(string fieldPath)
@@ -297,9 +299,9 @@ namespace Docunet
             return this;
         }
         
-        public Docunet List<T>(string fieldPath, List<T> inputObject)
+        public Docunet List<T>(string fieldPath, List<T> inputCollection)
         {
-            SetField(fieldPath, inputObject);
+            SetField(fieldPath, inputCollection);
 
             return this;
         }
@@ -384,12 +386,14 @@ namespace Docunet
                 {
                     var propertyValue = propertyInfo.GetValue(inputObject);
                     
-                    if (propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType)
+                    if (propertyValue == null)
                     {
-                        /*document.SetField(
-                            propertyName, 
-                            ConvertFromCollection((IList)propertyValue, propertyInfo.PropertyType)
-                        );*/
+                        document.SetField(propertyInfo.Name, null);
+                    }
+                    // property is array or collection
+                    else if (propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType)
+                    {
+                        document.SetField(propertyInfo.Name, ToList(propertyValue));
                     }
                     // property is class except the string type since string values are parsed differently
                     else if (propertyInfo.PropertyType.IsClass && (propertyInfo.PropertyType.Name != "String"))
@@ -405,6 +409,62 @@ namespace Docunet
                 
                 return document;
             }
+        }
+        
+        public static List<object> ToList<T>(T inputCollection)
+        {
+            var collectionType = inputCollection.GetType();
+            var documents = new List<object>();
+            
+            if (collectionType.IsArray || collectionType.IsGenericType)
+            {
+                var collection = (IList)inputCollection;
+                
+                if (collection.Count > 0)
+                {
+                    // create instance of property type
+                    var collectionInstance = Activator.CreateInstance(collectionType, collection.Count);
+    
+                    for (int i = 0; i < collection.Count; i++)
+                    {
+                        var elementType = collection[i].GetType();
+                        
+                        // collection is simple array
+                        if (collectionType.IsArray)
+                        {
+                            documents.Add(collection[i]);
+                        }
+                        // collection is generic
+                        else if (collectionType.IsGenericType && (collection is IEnumerable))
+                        {
+                            // generic collection consists of basic types
+                            if (elementType.IsPrimitive ||
+                                (elementType == typeof(string)) ||
+                                (elementType == typeof(DateTime)) ||
+                                (elementType == typeof(decimal)))
+                            {
+                                documents.Add(collection[i]);
+                            }
+                            // generic collection consists of generic type which should be parsed
+                            else
+                            {
+                                // create instance object based on first element of generic collection
+                                var instance = Activator.CreateInstance(collectionType.GetGenericArguments().First(), null);
+                                
+                                documents.Add(ToDocument(collection[i]));
+                            }
+                        }
+                        else
+                        {
+                            var obj = Activator.CreateInstance(elementType, collection[i]);
+    
+                            documents.Add(obj);
+                        }
+                    }
+                }
+            }
+            
+            return documents;
         }
         
         // TODO: implement ToList<T>(T inputObject) which converts inputObject to List<Docunet>

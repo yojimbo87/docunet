@@ -134,6 +134,11 @@ namespace Docunet
             return (object)GetField(fieldPath);
         }
         
+        public T Object<T>(string fieldPath)
+        {
+            return (T)GetField(fieldPath);
+        }
+        
         public Docunet Document(string fieldPath)
         {
             return (Docunet)GetField(fieldPath);
@@ -141,16 +146,7 @@ namespace Docunet
         
         public List<T> List<T>(string fieldPath)
         {
-            var value = GetField(fieldPath);
-            
-            if (value == null)
-            {
-                throw new Exception("Value is null.");
-            }
-            else
-            {
-                return (List<T>)value;
-            }
+            return (List<T>)GetField(fieldPath);
         }
         
         private object GetField(string fieldPath)
@@ -271,6 +267,7 @@ namespace Docunet
             return this;
         }
         
+        // used for null value
         public Docunet Object(string fieldPath, object value)
         {
             SetField(fieldPath, value);
@@ -278,10 +275,24 @@ namespace Docunet
             return this;
         }
         
-        public Docunet Document(string fieldPath, Docunet value)
+        public Docunet Object<T>(string fieldPath, T value)
         {
             SetField(fieldPath, value);
 
+            return this;
+        }
+        
+        public Docunet Document<T>(string fieldPath, T value)
+        {
+            if (value is Docunet)
+            {
+                SetField(fieldPath, value);
+            }
+            else
+            {
+                // TODO: if value is other than Docunet, parse its content to docunet type
+            }
+            
             return this;
         }
         

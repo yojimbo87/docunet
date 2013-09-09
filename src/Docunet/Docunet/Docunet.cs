@@ -291,7 +291,7 @@ namespace Docunet
             }
             else
             {
-                SetField(fieldPath, Docunet.ToDocument<T>(inputObject));
+                SetField(fieldPath, ToDocument<T>(inputObject));
             }
             
             return this;
@@ -394,10 +394,7 @@ namespace Docunet
                     // property is class except the string type since string values are parsed differently
                     else if (propertyInfo.PropertyType.IsClass && (propertyInfo.PropertyType.Name != "String"))
                     {
-                        /*document.SetField(
-                            propertyName, 
-                            ConvertFromObject(propertyValue, propertyInfo.PropertyType)
-                        );*/
+                        document.SetField(propertyInfo.Name, ToDocument(propertyValue));
                     }
                     // property is basic type
                     else

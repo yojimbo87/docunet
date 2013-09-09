@@ -139,16 +139,17 @@ namespace Docunet.Tests
             dummy1.Foo = "test string value";
             dummy1.Bar = 12345;
             
-            var dummy2 = new Dummy();
+            var dummy2 = new NestedDummy();
             dummy2.Foo = "test value string";
             dummy2.Bar = 54321;
+            dummy2.Baz = dummy1;
             
             var document = new Docunet()
                 .Object("foo", dummy1)
                 .Object("bar.baz", dummy2);
             
             Assert.AreEqual(dummy1, document.Object<Dummy>("foo"));
-            Assert.AreEqual(dummy2, document.Object<Dummy>("bar.baz"));
+            Assert.AreEqual(dummy2, document.Object<NestedDummy>("bar.baz"));
         }
         
         [Test()]
@@ -186,9 +187,10 @@ namespace Docunet.Tests
             dummy1.Foo = "test string value";
             dummy1.Bar = 12345;
             
-            var dummy2 = new Dummy();
+            var dummy2 = new NestedDummy();
             dummy2.Foo = "test value string";
             dummy2.Bar = 54321;
+            dummy2.Baz = dummy1;
             
             var doc1 = Docunet.ToDocument(dummy1);
             var doc2 = Docunet.ToDocument(dummy2);

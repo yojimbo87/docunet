@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Dummy.cs" />
     <Compile Include="FieldTests.cs" />
+    <Compile Include="NestedDummy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

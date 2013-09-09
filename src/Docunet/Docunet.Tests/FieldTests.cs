@@ -133,6 +133,25 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_get_and_set_generic_object_values()
+        {
+            var dummy1 = new Dummy();
+            dummy1.Foo = "test string value";
+            dummy1.Bar = 12345;
+            
+            var dummy2 = new Dummy();
+            dummy2.Foo = "test value string";
+            dummy2.Bar = 54321;
+            
+            var document = new Docunet()
+                .Object("foo", dummy1)
+                .Object("bar.baz", dummy2);
+            
+            Assert.AreEqual(dummy1, document.Object<Dummy>("foo"));
+            Assert.AreEqual(dummy2, document.Object<Dummy>("bar.baz"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_document()
         {
             var doc = new Docunet()
@@ -157,6 +176,31 @@ namespace Docunet.Tests
             
             Assert.AreEqual(stringList, document.List<string>("foo"));
             Assert.AreEqual(intList, document.List<int>("bar.baz"));
+        }
+        
+        [Test()]
+        public void Should_get_and_set_generic_object_list()
+        {
+            var dummies1 = new List<Dummy> 
+            { 
+                new Dummy() { Foo = "Dummy one", Bar = 1 },
+                new Dummy() { Foo = "Dummy two", Bar = 2 },
+                new Dummy() { Foo = "Dummy three", Bar = 3 }
+            };
+            
+            var dummies2 = new List<Dummy> 
+            { 
+                new Dummy() { Foo = "Dummy four", Bar = 4 },
+                new Dummy() { Foo = "Dummy five", Bar = 5 },
+                new Dummy() { Foo = "Dummy six", Bar = 6 }
+            };
+            
+            var document = new Docunet()
+                .List<Dummy>("foo", dummies1)
+                .List<Dummy>("bar.baz", dummies2);
+            
+            Assert.AreEqual(dummies1, document.List<Dummy>("foo"));
+            Assert.AreEqual(dummies2, document.List<Dummy>("bar.baz"));
         }
     }
 }

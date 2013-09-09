@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Docunet
 {
@@ -9,113 +10,113 @@ namespace Docunet
         
         public bool Bool(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (bool)value;
+                return (bool)fieldValue;
             }
         }
         
         public byte Byte(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (byte)value;
+                return (byte)fieldValue;
             }
         }
         
         public short Short(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (short)value;
+                return (short)fieldValue;
             }
         }
         
         public int Int(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (int)value;
+                return (int)fieldValue;
             }
         }
         
         public long Long(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (long)value;
+                return (long)fieldValue;
             }
         }
         
         public float Float(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (float)value;
+                return (float)fieldValue;
             }
         }
         
         public double Double(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (double)value;
+                return (double)fieldValue;
             }
         }
         
         public decimal Decimal(string fieldPath)
         {
-            var value = GetField(fieldPath);
+            var fieldValue = GetField(fieldPath);
             
-            if (value == null)
+            if (fieldValue == null)
             {
                 throw new Exception("Value is null.");
             }
             else
             {
-                return (decimal)value;
+                return (decimal)fieldValue;
             }
         }
         
@@ -267,44 +268,43 @@ namespace Docunet
             return this;
         }
         
-        // used for null value
-        public Docunet Object(string fieldPath, object value)
+        // used for null inputObject
+        public Docunet Object(string fieldPath, object inputObject)
         {
-            SetField(fieldPath, value);
+            SetField(fieldPath, inputObject);
 
             return this;
         }
         
-        public Docunet Object<T>(string fieldPath, T value)
+        public Docunet Object<T>(string fieldPath, T inputObject)
         {
-            SetField(fieldPath, value);
+            SetField(fieldPath, inputObject);
 
             return this;
         }
         
-        public Docunet Document<T>(string fieldPath, T value)
+        public Docunet Document<T>(string fieldPath, T inputObject)
         {
-            if (value is Docunet)
+            if (inputObject is Docunet)
             {
-                SetField(fieldPath, value);
+                SetField(fieldPath, inputObject);
             }
             else
             {
-                // TODO: if value is other than Docunet, parse its content to docunet type
-                SetField(fieldPath, Docunet.ToDocument<T>(value));
+                SetField(fieldPath, Docunet.ToDocument<T>(inputObject));
             }
             
             return this;
         }
         
-        public Docunet List<T>(string fieldPath, List<T> value)
+        public Docunet List<T>(string fieldPath, List<T> inputObject)
         {
-            SetField(fieldPath, value);
+            SetField(fieldPath, inputObject);
 
             return this;
         }
         
-        private void SetField(string fieldPath, object value)
+        private void SetField(string fieldPath, object inputObject)
         {
             if (fieldPath.Contains("."))
             {
@@ -318,11 +318,11 @@ namespace Docunet
                     {
                         if (embeddedDocument.ContainsKey(field))
                         {
-                            embeddedDocument[field] = value;
+                            embeddedDocument[field] = inputObject;
                         }
                         else
                         {
-                            embeddedDocument.Add(field, value);
+                            embeddedDocument.Add(field, inputObject);
                         }
                         
                         break;
@@ -347,28 +347,28 @@ namespace Docunet
             {
                 if (this.ContainsKey(fieldPath))
                 {
-                    this[fieldPath] = value;
+                    this[fieldPath] = inputObject;
                 }
                 else
                 {
-                    this.Add(fieldPath, value);
+                    this.Add(fieldPath, inputObject);
                 }
             }
         }
         
         #endregion
         
-        public static Docunet ToDocument<T>(T value)
+        public static Docunet ToDocument<T>(T inputObject)
         {
-            if (value is Docunet)
+            if (inputObject is Docunet)
             {
-                return value as Docunet;
+                return inputObject as Docunet;
             }
-            else if (value is Dictionary<string, object>)
+            else if (inputObject is Dictionary<string, object>)
             {
                 var document = new Docunet();
                 
-                foreach (KeyValuePair<string, object> field in value as Dictionary<string, object>)
+                foreach (KeyValuePair<string, object> field in inputObject as Dictionary<string, object>)
                 {
                     document.Object(field.Key, field.Value);
                 }
@@ -377,13 +377,39 @@ namespace Docunet
             }
             else
             {
-                var valueType = value.GetType();
+                var inputObjectType = inputObject.GetType();
                 var document = new Docunet();
                 
-                
+                foreach (var propertyInfo in inputObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    var propertyValue = propertyInfo.GetValue(inputObject);
+                    
+                    if (propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType)
+                    {
+                        /*document.SetField(
+                            propertyName, 
+                            ConvertFromCollection((IList)propertyValue, propertyInfo.PropertyType)
+                        );*/
+                    }
+                    // property is class except the string type since string values are parsed differently
+                    else if (propertyInfo.PropertyType.IsClass && (propertyInfo.PropertyType.Name != "String"))
+                    {
+                        /*document.SetField(
+                            propertyName, 
+                            ConvertFromObject(propertyValue, propertyInfo.PropertyType)
+                        );*/
+                    }
+                    // property is basic type
+                    else
+                    {
+                        document.SetField(propertyInfo.Name, propertyValue);
+                    }
+                }
                 
                 return document;
             }
         }
+        
+        // TODO: implement ToList<T>(T inputObject) which converts inputObject to List<Docunet>
     }
 }

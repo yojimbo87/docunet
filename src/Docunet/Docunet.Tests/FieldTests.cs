@@ -180,6 +180,28 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_get_and_set_generic_object_converted_to_document()
+        {
+            var dummy1 = new Dummy();
+            dummy1.Foo = "test string value";
+            dummy1.Bar = 12345;
+            
+            var dummy2 = new Dummy();
+            dummy2.Foo = "test value string";
+            dummy2.Bar = 54321;
+            
+            var doc1 = Docunet.ToDocument(dummy1);
+            var doc2 = Docunet.ToDocument(dummy2);
+            
+            var document = new Docunet()
+                .Document("foo", dummy1)
+                .Document("bar.baz", dummy2);
+            
+            Assert.AreEqual(doc1, document.Document("foo"));
+            Assert.AreEqual(doc2, document.Document("bar.baz"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_flat_list()
         {
             var stringList = new List<string> { "one", "two", "three" };

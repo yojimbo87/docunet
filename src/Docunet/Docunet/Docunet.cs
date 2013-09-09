@@ -466,7 +466,5 @@ namespace Docunet
             
             return documents;
         }
-        
-        // TODO: implement ToList<T>(T inputObject) which converts inputObject to List<Docunet>
     }
 }

@@ -165,6 +165,21 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_get_and_set_dictionary()
+        {
+            var doc = new Dictionary<string, object>();
+            doc.Add("foo", "test string value");
+            doc.Add("bar.baz", "test value string");
+            
+            var document = new Docunet()
+                .Document("doc", doc);
+            
+            var parsedDoc = Docunet.ToDocument(doc);
+            
+            Assert.AreEqual(parsedDoc, document.Document("doc"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_flat_list()
         {
             var stringList = new List<string> { "one", "two", "three" };

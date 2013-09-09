@@ -291,6 +291,7 @@ namespace Docunet
             else
             {
                 // TODO: if value is other than Docunet, parse its content to docunet type
+                SetField(fieldPath, Docunet.ToDocument<T>(value));
             }
             
             return this;
@@ -356,5 +357,33 @@ namespace Docunet
         }
         
         #endregion
+        
+        public static Docunet ToDocument<T>(T value)
+        {
+            if (value is Docunet)
+            {
+                return value as Docunet;
+            }
+            else if (value is Dictionary<string, object>)
+            {
+                var document = new Docunet();
+                
+                foreach (KeyValuePair<string, object> field in value as Dictionary<string, object>)
+                {
+                    document.Object(field.Key, field.Value);
+                }
+                
+                return document;
+            }
+            else
+            {
+                var valueType = value.GetType();
+                var document = new Docunet();
+                
+                
+                
+                return document;
+            }
+        }
     }
 }

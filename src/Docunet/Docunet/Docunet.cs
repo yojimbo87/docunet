@@ -154,27 +154,42 @@ namespace Docunet
         
         private object GetField(string fieldPath)
         {
+            var currentField = "";
+            var arrayContent = "";
+            
             if (fieldPath.Contains("."))
             {
                 var fields = fieldPath.Split('.');
                 var iteration = 1;
                 var embeddedDocument = this;
-
+                
                 foreach (var field in fields)
                 {
+                    currentField = field;
+                    arrayContent = "";
+                    
+                    if (field.Contains("["))
+                    {
+                        var firstIndex = field.IndexOf('[');
+                        var lastIndex = field.IndexOf(']');
+                        
+                        arrayContent = field.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                        currentField = field.Substring(0, firstIndex);
+                    }
+                    
                     if (iteration == fields.Length)
                     {
-                        if (embeddedDocument.ContainsKey(field))
+                        if (embeddedDocument.ContainsKey(currentField))
                         {
-                            return embeddedDocument[field];
+                            return GetFieldValue(currentField, arrayContent, embeddedDocument);
                         }
                         
                         break;
                     }
 
-                    if (embeddedDocument.ContainsKey(field))
+                    if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)embeddedDocument[field];
+                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -187,13 +202,36 @@ namespace Docunet
             }
             else
             {
-                if (this.ContainsKey(fieldPath))
+                currentField = fieldPath;
+                
+                if (fieldPath.Contains("["))
                 {
-                    return this[fieldPath];
+                    var firstIndex = fieldPath.IndexOf('[');
+                    var lastIndex = fieldPath.IndexOf(']');
+                    
+                    arrayContent = fieldPath.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                    currentField = fieldPath.Substring(0, firstIndex);
+                }
+                
+                if (this.ContainsKey(currentField))
+                {
+                    return GetFieldValue(currentField, arrayContent, this);
                 }
             }
             
             return null;
+        }
+        
+        private object GetFieldValue(string fieldName, string arrayContent, Docunet fieldObject)
+        {
+            if (arrayContent == "")
+            {
+                return fieldObject[fieldName];
+            }
+            else
+            {
+                return ((IList)fieldObject[fieldName])[int.Parse(arrayContent)];
+            }
         }
         
         #endregion

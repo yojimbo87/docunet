@@ -256,11 +256,131 @@ namespace Docunet.Tests
             };
             
             var document = new Docunet()
-                .List<Dummy>("foo", dummies1)
-                .List<Dummy>("bar.baz", dummies2);
+                .List("foo", dummies1)
+                .List("bar.baz", dummies2);
             
             Assert.AreEqual(dummies1, document.List<Dummy>("foo"));
             Assert.AreEqual(dummies2, document.List<Dummy>("bar.baz"));
+        }
+        
+        [Test()]
+        public void Should_get_and_set_docunet_list()
+        {
+            var dummies1 = new List<Docunet> 
+            { 
+                new Docunet().String("foo", "Dummy one").Int("bar", 1),
+                new Docunet().String("foo", "Dummy two").Int("bar", 2),
+                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+            };
+            
+            var dummies2 = new List<Docunet> 
+            { 
+                new Docunet().String("foo", "Dummy four").Int("bar", 4),
+                new Docunet().String("foo", "Dummy five").Int("bar", 5),
+                new Docunet().String("foo", "Dummy six").Int("bar", 6)
+            };
+            
+            var document = new Docunet()
+                .List("foo", dummies1)
+                .List("bar.baz", dummies2);
+            
+            Assert.AreEqual(dummies1, document.List<Docunet>("foo"));
+            Assert.AreEqual(dummies2, document.List<Docunet>("bar.baz"));
+        }
+        
+        [Test()]
+        public void Should_get_and_set_field_with_flat_array_values()
+        {   
+            var list1 = new List<string> { "one", "two", "three" };
+            var list2 = new List<string> { "four", "five", "six" };
+            
+            var document = new Docunet()
+                .List<string>("foo", list1)
+                .List<string>("bar.baz", list2);
+            
+            Assert.AreEqual(list1[0], document.String("foo[0]"));
+            Assert.AreEqual(list1[1], document.String("foo[1]"));
+            Assert.AreEqual(list1[2], document.String("foo[2]"));
+            
+            Assert.AreEqual(list2[0], document.String("bar.baz[0]"));
+            Assert.AreEqual(list2[1], document.String("bar.baz[1]"));
+            Assert.AreEqual(list2[2], document.String("bar.baz[2]"));
+        }
+        
+        [Test()]
+        public void Should_get_and_set_field_with_object_array_values()
+        {
+            var dummies1 = new List<Dummy> 
+            { 
+                new Dummy() { Foo = "Dummy one", Bar = 1 },
+                new Dummy() { Foo = "Dummy two", Bar = 2 },
+                new Dummy() { Foo = "Dummy three", Bar = 3 }
+            };
+            
+            var dummies2 = new List<Dummy> 
+            { 
+                new Dummy() { Foo = "Dummy four", Bar = 4 },
+                new Dummy() { Foo = "Dummy five", Bar = 5 },
+                new Dummy() { Foo = "Dummy six", Bar = 6 }
+            };
+            
+            var document = new Docunet()
+                .List("foo", dummies1)
+                .List("bar.baz", dummies2);
+            
+            Assert.AreEqual(dummies1, document.List<Dummy>("foo"));
+            Assert.AreEqual(dummies1[0].Foo, document.Object<Dummy>("foo[0]").Foo);
+            Assert.AreEqual(dummies1[0].Bar, document.Object<Dummy>("foo[0]").Bar);
+            Assert.AreEqual(dummies1[1].Foo, document.Object<Dummy>("foo[1]").Foo);
+            Assert.AreEqual(dummies1[1].Bar, document.Object<Dummy>("foo[1]").Bar);
+            Assert.AreEqual(dummies1[2].Foo, document.Object<Dummy>("foo[2]").Foo);
+            Assert.AreEqual(dummies1[2].Bar, document.Object<Dummy>("foo[2]").Bar);
+            
+            Assert.AreEqual(dummies2, document.List<Dummy>("bar.baz"));
+            Assert.AreEqual(dummies2[0].Foo, document.Object<Dummy>("bar.baz[0]").Foo);
+            Assert.AreEqual(dummies2[0].Bar, document.Object<Dummy>("bar.baz[0]").Bar);
+            Assert.AreEqual(dummies2[1].Foo, document.Object<Dummy>("bar.baz[1]").Foo);
+            Assert.AreEqual(dummies2[1].Bar, document.Object<Dummy>("bar.baz[1]").Bar);
+            Assert.AreEqual(dummies2[2].Foo, document.Object<Dummy>("bar.baz[2]").Foo);
+            Assert.AreEqual(dummies2[2].Bar, document.Object<Dummy>("bar.baz[2]").Bar);
+        }
+        
+        [Test()]
+        public void Should_get_and_set_field_with_docunet_array_values()
+        {
+            var dummies1 = new List<Docunet> 
+            { 
+                new Docunet().String("foo", "Dummy one").Int("bar", 1),
+                new Docunet().String("foo", "Dummy two").Int("bar", 2),
+                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+            };
+            
+            var dummies2 = new List<Docunet> 
+            { 
+                new Docunet().String("foo", "Dummy four").Int("bar", 4),
+                new Docunet().String("foo", "Dummy five").Int("bar", 5),
+                new Docunet().String("foo", "Dummy six").Int("bar", 6)
+            };
+            
+            var document = new Docunet()
+                .List("foo", dummies1)
+                .List("bar.baz", dummies2);
+            
+            Assert.AreEqual(dummies1, document.List<Docunet>("foo"));
+            Assert.AreEqual(dummies1[0].String("foo"), document.String("foo[0].foo"));
+            Assert.AreEqual(dummies1[0].Int("bar"), document.Int("foo[0].bar"));
+            Assert.AreEqual(dummies1[1].String("foo"), document.String("foo[1].foo"));
+            Assert.AreEqual(dummies1[1].Int("bar"), document.Int("foo[1].bar"));
+            Assert.AreEqual(dummies1[2].String("foo"), document.String("foo[2].foo"));
+            Assert.AreEqual(dummies1[2].Int("bar"), document.Int("foo[2].bar"));
+            
+            Assert.AreEqual(dummies2, document.List<Docunet>("bar.baz"));
+            Assert.AreEqual(dummies2[0].String("foo"), document.String("bar.baz[0].foo"));
+            Assert.AreEqual(dummies2[0].Int("bar"), document.Int("bar.baz[0].bar"));
+            Assert.AreEqual(dummies2[1].String("foo"), document.String("bar.baz[1].foo"));
+            Assert.AreEqual(dummies2[1].Int("bar"), document.Int("bar.baz[1].bar"));
+            Assert.AreEqual(dummies2[2].String("foo"), document.String("bar.baz[2].foo"));
+            Assert.AreEqual(dummies2[2].Int("bar"), document.Int("bar.baz[2].bar"));
         }
     }
 }

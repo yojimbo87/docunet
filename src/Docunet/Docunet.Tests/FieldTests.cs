@@ -382,5 +382,24 @@ namespace Docunet.Tests
             Assert.AreEqual(dummies2[2].String("foo"), document.String("bar.baz[2].foo"));
             Assert.AreEqual(dummies2[2].Int("bar"), document.Int("bar.baz[2].bar"));
         }
+        
+        [Test()]
+        public void Should_drop_fields()
+        {
+            var document = new Docunet()
+                .String("foo1", "test string value 1")
+                .String("foo2", "test string value 2")
+                .String("bar.baz1", "test value string 1")
+                .String("bar.baz2", "test value string 2");
+            
+            document
+                .Drop("foo2")
+                .Drop("bar.baz2");
+                      
+            Assert.AreEqual("test string value 1", document.String("foo1"));
+            Assert.AreEqual(null, document.String("foo2"));
+            Assert.AreEqual("test value string 1", document.String("bar.baz1"));
+            Assert.AreEqual(null, document.String("bar.baz2"));
+        }
     }
 }

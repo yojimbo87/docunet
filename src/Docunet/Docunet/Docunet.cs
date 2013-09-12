@@ -473,16 +473,41 @@ namespace Docunet
             return this;
         }
         
+        #region Clone
+        
+        public Docunet Clone()
+        {
+            return Clone(this);
+        }
+        
+        private Docunet Clone(Docunet document)
+        {
+            var clonedDocument = new Docunet();
+            
+            foreach (KeyValuePair<string, object> field in document)
+            {
+                if (field.Value is Docunet)
+                {
+                    clonedDocument.Add(field.Key, Clone((Docunet)field.Value));
+                }
+                else
+                {
+                    clonedDocument.Add(field.Key, field.Value);
+                }
+            }
+            
+            return clonedDocument;
+        }
+        
+        #endregion
+        
         public Docunet Except(params string[] fields)
         {
-            Docunet document = new Docunet();
+            var document = Clone();
             
-            foreach (KeyValuePair<string, object> field in this)
+            foreach (string field in fields)
             {
-                if (!fields.Contains(field.Key))
-                {
-                    document.Add(field.Key, field.Value);
-                }
+                document.Drop(field);
             }
             
             return document;

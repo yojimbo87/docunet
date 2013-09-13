@@ -513,6 +513,18 @@ namespace Docunet
             return document;
         }
         
+        public Docunet Only(params string[] fields)
+        {
+            var document = new Docunet();
+            
+            foreach (string field in fields)
+            {
+                document.SetField(field, GetField(field));
+            }
+            
+            return document;
+        }
+        
         public static Docunet ToDocument<T>(T inputObject)
         {
             if (inputObject is Docunet)

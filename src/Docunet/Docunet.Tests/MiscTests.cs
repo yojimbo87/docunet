@@ -54,5 +54,27 @@ namespace Docunet.Tests
             Assert.AreEqual(document1.String("bar.baz1"), document2.String("bar.baz1"));
             Assert.AreEqual(null, document2.String("bar.baz2"));
         }
+        
+        [Test()]
+        public void Should_retrieve_new_document_only_with_specific_fields()
+        {
+            var document1 = new Docunet()
+                .String("foo1", "test string value 1")
+                .String("foo2", "test string value 2")
+                .String("bar.baz1", "test value string 1")
+                .String("bar.baz2", "test value string 2");
+            
+            var document2 = document1.Only("foo1", "bar.baz1");
+            
+            Assert.AreEqual("test string value 1", document1.String("foo1"));
+            Assert.AreEqual("test string value 2", document1.String("foo2"));
+            Assert.AreEqual("test value string 1", document1.String("bar.baz1"));
+            Assert.AreEqual("test value string 2", document1.String("bar.baz2"));
+            
+            Assert.AreEqual(document1.String("foo1"), document2.String("foo1"));
+            Assert.AreEqual(null, document2.String("foo2"));
+            Assert.AreEqual(document1.String("bar.baz1"), document2.String("bar.baz1"));
+            Assert.AreEqual(null, document2.String("bar.baz2"));
+        }
     }
 }

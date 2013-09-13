@@ -114,5 +114,41 @@ namespace Docunet.Tests
             Assert.AreEqual(false, document1.Equals(document3));
             Assert.AreEqual(false, document1.Equals(document4));
         }
+        
+        [Test()]
+        public void Should_convert_from_docunet_to_generic_object()
+        {
+            var document1 = new Docunet()
+                .String("Foo", "foo string value")
+                .Int("Bar", 12345);
+            
+            var dummy1 = document1.ToObject<Dummy>();
+            
+            Assert.AreEqual(document1.String("Foo"), dummy1.Foo);
+            Assert.AreEqual(document1.Int("Bar"), dummy1.Bar);
+            
+            var stringList = new List<string> { "one", "two", "three" };
+            var objectList = new List<Dummy>
+            {
+                new Dummy() { Foo = "one", Bar = 1 },
+                new Dummy() { Foo = "two", Bar = 2 },
+                new Dummy() { Foo = "three", Bar = 3 }
+            };
+            
+            var document2 = new Docunet()
+                .String("Foo", "foo string value")
+                .Int("Bar", 12345)
+                .Object("Baz", dummy1)
+                .List<string>("StringList", stringList)
+                .List<Dummy>("ObjectList", objectList);
+                
+            var nestedDummy = document2.ToObject<NestedDummy>();
+            
+            Assert.AreEqual(document2.String("Foo"), nestedDummy.Foo);
+            Assert.AreEqual(document2.Int("Bar"), nestedDummy.Bar);
+            Assert.AreEqual(document2.Object("Baz"), nestedDummy.Baz);
+            Assert.AreEqual(document2.List<string>("StringList"), nestedDummy.StringList);
+            Assert.AreEqual(document2.List<Dummy>("ObjectList"), nestedDummy.ObjectList);
+        }
     }
 }

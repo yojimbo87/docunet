@@ -690,6 +690,169 @@ namespace Docunet
         
         #endregion
         
+        #region Convert to generic object
+        
+        /// <summary>
+        /// Converts and copies document fields to specified generic object.
+        /// </summary>
+        public T ToObject<T>() where T : class, new()
+        {
+            T genericObject = new T();
+
+            genericObject = (T)ToObject<T>(genericObject, this);
+
+            return genericObject;
+        }
+        
+        private T ToObject<T>(T genericObject, Docunet document) where T : class, new()
+        {
+            var genericObjectType = genericObject.GetType();
+
+            if (genericObject is Docunet)
+            {
+                // if generic object is arango specific class - use set field to copy data
+                foreach (KeyValuePair<string, object> item in document)
+                {
+                    (genericObject as Docunet).SetField(item.Key, item.Value);
+                }
+            }
+            else
+            {
+                foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    object fieldValue = null;
+                    Type fieldType = null;
+                    
+                    if (document.Has(propertyInfo.Name))
+                    {
+                        fieldValue = document.GetField(propertyInfo.Name);
+                        
+                        if (fieldValue != null)
+                        {
+                            fieldType = fieldValue.GetType();
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    
+                    // property is a collection
+                    if ((propertyInfo.PropertyType.IsArray || 
+                         propertyInfo.PropertyType.IsGenericType))
+                    {
+                        var instance = Activator.CreateInstance(propertyInfo.PropertyType);
+                            
+                        propertyInfo.SetValue(
+                            genericObject,
+                            ConvertToCollection(instance, (IList)fieldValue, propertyInfo.PropertyType),
+                            null
+                        );
+                    }
+                    // property is class except the string type since string values are parsed differently
+                    else if (propertyInfo.PropertyType.IsClass && (propertyInfo.PropertyType.Name != "String"))
+                    {
+                        // create object instance of embedded class
+                        var instance = Activator.CreateInstance(propertyInfo.PropertyType);
+
+                        if (fieldType == typeof(Docunet))
+                        {
+                            propertyInfo.SetValue(genericObject, ToObject(instance, (Docunet)fieldValue), null);
+                        }
+                        else
+                        {
+                            propertyInfo.SetValue(genericObject, fieldValue, null);
+                        }
+                    }
+                    // property is basic type
+                    else
+                    {
+                        if ((fieldValue == null) || (propertyInfo.PropertyType == fieldType))
+                        {
+                            propertyInfo.SetValue(genericObject, fieldValue, null);
+                        } 
+                        else
+                        {
+                            propertyInfo.SetValue(genericObject, Convert.ChangeType(fieldValue, propertyInfo.PropertyType), null);
+                        }
+                    }
+                }
+            }
+
+            return genericObject;
+        }
+        
+        private object ConvertToCollection(object collectionObject, IList collection, Type collectionType)
+        {
+            if (collection == null)
+            {
+                return null;
+            }
+            
+            //List<object> convertedCollection = new List<object>();
+            
+            if (collection.Count > 0)
+            {
+                // create instance of property type
+                var collectionInstance = Activator.CreateInstance(collectionType, collection.Count);
+
+                for (int i = 0; i < collection.Count; i++)
+                {
+                    var elementType = collection[i].GetType();
+                    
+                    // collection is simple array
+                    if (collectionType.IsArray)
+                    {
+                        ((IList)collectionObject).Add(collection[i]);
+                    }
+                    // collection is generic
+                    else if (collectionType.IsGenericType && (collection is IEnumerable))
+                    {
+                        // generic collection consists of basic types
+                        if (elementType.IsPrimitive ||
+                            (elementType == typeof(string)) ||
+                            (elementType == typeof(DateTime)) ||
+                            (elementType == typeof(decimal)))
+                        {
+                            ((IList)collectionObject).Add(collection[i]);
+                        }
+                        // generic collection consists of generic type which should be parsed
+                        else
+                        {
+                            // create instance object based on first element of generic collection
+                            var instance = Activator.CreateInstance(collectionType.GetGenericArguments().First(), null);
+                            
+                            if (elementType == typeof(Docunet))
+                            {
+                                ((IList)collectionObject).Add(ToObject(instance, (Docunet)collection[i]));
+                            }
+                            else
+                            {
+                                if (elementType == instance.GetType())
+                                {
+                                    ((IList)collectionObject).Add(collection[i]);
+                                } 
+                                else
+                                {
+                                    ((IList)collectionObject).Add(Convert.ChangeType(collection[i], collectionType));
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var obj = Activator.CreateInstance(elementType, collection[i]);
+
+                        ((IList)collectionObject).Add(obj);
+                    }
+                }
+            }
+            
+            return collectionObject;
+        }
+        
+        #endregion
+        
         public static Docunet ToDocument<T>(T inputObject)
         {
             if (inputObject is Docunet)

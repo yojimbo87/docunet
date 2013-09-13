@@ -76,5 +76,43 @@ namespace Docunet.Tests
             Assert.AreEqual(document1.String("bar.baz1"), document2.String("bar.baz1"));
             Assert.AreEqual(null, document2.String("bar.baz2"));
         }
+        
+        [Test()]
+        public void Should_evaluate_equality_of_two_documents()
+        {
+            var list = new List<string> { "one", "two", "three" };
+            
+            var dummies = new List<Docunet> 
+            { 
+                new Docunet().String("foo", "Dummy one").Int("bar", 1),
+                new Docunet().String("foo", "Dummy two").Int("bar", 2),
+                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+            };
+            
+            var document1 = new Docunet()
+                .String("foo", "test string value")
+                .String("bar.baz1", "test value string")
+                .List("bar.baz2", list)
+                .List("bar.baz3", dummies);
+            
+            var document2 = new Docunet()
+                .String("foo", "test string value")
+                .String("bar.baz1", "test value string")
+                .List("bar.baz2", list)
+                .List("bar.baz3", dummies);
+            
+            var document3 = new Docunet()
+                .String("foo", "test string value");
+            
+            var document4 = new Docunet()
+                .String("foo", "test string value")
+                .String("bar.baz1", "test value string")
+                .List("bar.baz2", new List<string> { "one", "two" })
+                .List("bar.baz3", dummies);
+            
+            Assert.AreEqual(true, document1.Equals(document2));
+            Assert.AreEqual(false, document1.Equals(document3));
+            Assert.AreEqual(false, document1.Equals(document4));
+        }
     }
 }

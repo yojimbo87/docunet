@@ -384,6 +384,20 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_check_presence_of_document_fields()
+        {
+            var document = new Docunet()
+                .String("foo", "test string value")
+                .String("bar.baz1", "test value string")
+                .List("bar.baz2", new List<string> { "one", "two", "three" });
+            
+            Assert.AreEqual(true, document.Has("foo"));
+            Assert.AreEqual(true, document.Has("bar.baz1"));
+            Assert.AreEqual(true, document.Has("bar.baz2[1]"));
+            Assert.AreEqual(false, document.Has("should_not_exist"));
+        }
+        
+        [Test()]
         public void Should_drop_fields()
         {
             var document = new Docunet()

@@ -398,10 +398,75 @@ namespace Docunet
         
         #endregion
         
-        /*public bool Has(string fieldPath)
+        public bool Has(string fieldPath)
         {
+            var currentField = "";
+            var arrayContent = "";
             
-        }*/
+            if (fieldPath.Contains("."))
+            {
+                var fields = fieldPath.Split('.');
+                var iteration = 1;
+                var embeddedDocument = this;
+                
+                foreach (var field in fields)
+                {
+                    currentField = field;
+                    arrayContent = "";
+                    
+                    if (field.Contains("["))
+                    {
+                        var firstIndex = field.IndexOf('[');
+                        var lastIndex = field.IndexOf(']');
+                        
+                        arrayContent = field.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                        currentField = field.Substring(0, firstIndex);
+                    }
+                    
+                    if (iteration == fields.Length)
+                    {
+                        if (embeddedDocument.ContainsKey(currentField))
+                        {
+                            return true;
+                        }
+                        
+                        break;
+                    }
+
+                    if (embeddedDocument.ContainsKey(currentField))
+                    {
+                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                    }
+                    else
+                    {
+                        // if current field in path isn't present
+                        break;
+                    }
+
+                    iteration++;
+                }
+            }
+            else
+            {
+                currentField = fieldPath;
+                
+                if (fieldPath.Contains("["))
+                {
+                    var firstIndex = fieldPath.IndexOf('[');
+                    var lastIndex = fieldPath.IndexOf(']');
+                    
+                    arrayContent = fieldPath.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                    currentField = fieldPath.Substring(0, firstIndex);
+                }
+                
+                if (this.ContainsKey(currentField))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
         
         public Docunet Drop(string fieldPath)
         {
@@ -524,6 +589,106 @@ namespace Docunet
             
             return document;
         }
+        
+        #region Equals
+        
+        public bool Equals(Docunet document)
+        {
+            return CompareDocuments(document, this);
+        }
+        
+        private bool CompareDocuments(Docunet document1, Docunet document2)
+        {
+            var iterations = 0;
+            
+            foreach (KeyValuePair<string, object> field in document1)
+            {
+                if (document2.Has(field.Key))
+                {
+                    var areEqual = false;
+                    var obj = document2.GetField(field.Key);
+                    
+                    if ((field.Value is Docunet) && (obj is Docunet))
+                    {
+                        areEqual = CompareDocuments((Docunet)field.Value, (Docunet)obj);
+                    }
+                    else if ((field.Value is IList) && (obj is IList))
+                    {
+                        areEqual = CompareCollections((IList)field.Value, (IList)obj);
+                    }
+                    else
+                    {
+                        areEqual = CompareValues(field.Value, obj);
+                    }
+                    
+                    if (!areEqual)
+                    {
+                        return false;
+                    }
+                    
+                    iterations++;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            
+            if (iterations != document2.Count)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        private bool CompareCollections(IList collection1, IList collection2)
+        {
+            if (collection1.Count != collection2.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < collection1.Count; i++)
+            {
+                var item = collection1[i];
+                var areEqual = false;
+                
+                if ((item is Docunet) && (collection2[i] is Docunet))
+                {
+                    areEqual = CompareDocuments((Docunet)item, (Docunet)collection2[i]);
+                }
+                else
+                {
+                    areEqual = CompareValues(item, collection2[i]);
+                }
+                
+                if (!areEqual)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        private bool CompareValues(object value1, object value2)
+        {
+            var areEqual = false;
+            
+            if ((value1 != null) && (value2 != null))
+            {
+                areEqual = value1.Equals(value2);
+            }
+            else if ((value1 == null) && (value2 == null))
+            {
+                areEqual = true;
+            }
+            
+            return areEqual;
+        }
+        
+        #endregion
         
         public static Docunet ToDocument<T>(T inputObject)
         {

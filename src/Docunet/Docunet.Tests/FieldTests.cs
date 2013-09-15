@@ -387,13 +387,23 @@ namespace Docunet.Tests
         public void Should_check_presence_of_document_fields()
         {
             var document = new Docunet()
-                .String("foo", "test string value")
+                .String("foo1", "test string value")
+                .List("foo2", new List<string> { "one", "two", "three" })
                 .String("bar.baz1", "test value string")
                 .List("bar.baz2", new List<string> { "one", "two", "three" });
             
-            Assert.AreEqual(true, document.Has("foo"));
+            Assert.AreEqual(true, document.Has("foo1"));
+            Assert.AreEqual(true, document.Has("foo2"));
+            Assert.AreEqual(true, document.Has("foo2[0]"));
+            Assert.AreEqual(true, document.Has("foo2[1]"));
+            Assert.AreEqual(true, document.Has("foo2[2]"));
+            Assert.AreEqual(false, document.Has("foo2[3]"));
             Assert.AreEqual(true, document.Has("bar.baz1"));
+            Assert.AreEqual(true, document.Has("bar.baz2"));
+            Assert.AreEqual(true, document.Has("bar.baz2[0]"));
             Assert.AreEqual(true, document.Has("bar.baz2[1]"));
+            Assert.AreEqual(true, document.Has("bar.baz2[2]"));
+            Assert.AreEqual(false, document.Has("bar.baz2[3]"));
             Assert.AreEqual(false, document.Has("should_not_exist"));
         }
         

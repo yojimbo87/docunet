@@ -427,7 +427,20 @@ namespace Docunet
                     {
                         if (embeddedDocument.ContainsKey(currentField))
                         {
-                            return true;
+                            // it's array - should check if there is value at specific index
+                            if (arrayContent != "")
+                            {
+                                // passed array index is less than total number of elements in the array
+                                if (((IList)embeddedDocument[currentField]).Count > int.Parse(arrayContent))
+                                {
+                                    return true;
+                                }
+                            }
+                            // it's single value
+                            else
+                            {
+                                return true;
+                            }
                         }
                         
                         break;
@@ -461,7 +474,20 @@ namespace Docunet
                 
                 if (this.ContainsKey(currentField))
                 {
-                    return true;
+                    // it's array - should check if there is value at specific index
+                    if (arrayContent != "")
+                    {
+                        // passed array index is less than total number of elements in the array
+                        if (((IList)this[currentField]).Count > int.Parse(arrayContent))
+                        {
+                            return true;
+                        }
+                    }
+                    // it's single value
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
             

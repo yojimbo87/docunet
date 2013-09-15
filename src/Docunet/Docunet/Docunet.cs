@@ -564,23 +564,6 @@ namespace Docunet
             return null;
         }
         
-        /*private DocunetType GetDocunetType(string typeString)
-        {
-            DocunetType type;
-            
-            switch (typeString.ToLower())
-            {
-                case "boolean":
-                    type = DocunetType.Boolean;
-                    break;
-                default:
-                    type = DocunetType.Unknown;
-                    break;
-            }
-            
-            return type;
-        }*/
-        
         public Docunet Drop(string fieldPath)
         {
             var currentField = "";

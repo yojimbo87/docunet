@@ -415,5 +415,67 @@ namespace Docunet.Tests
             Assert.AreEqual("test value string 1", document.String("bar.baz1"));
             Assert.AreEqual(null, document.String("bar.baz2"));
         }
+        
+        [Test()]
+        public void Should_retrieve_type_of_fields()
+        {
+            var dummy = new Dummy();
+            var stringList = new List<string>();           
+            var objectList = new List<Dummy>();
+            
+            var document = new Docunet()
+                .Bool("bool", true)
+                .Byte("byte", 123)
+                .Short("short", 12345)
+                .Int("int", 1234567)
+                .Long("long", 123456789)
+                .Float("float", 123.4f)
+                .Double("double", 123.456)
+                .Decimal("decimal", new Decimal(12345))
+                .String("string", "test string value")
+                .DateTime("dateTime", DateTime.Now)
+                .Object("dummyObject", dummy)
+                .List("stringList", stringList)
+                .List("objectList", objectList)
+                .Bool("nested.bool", true)
+                .Byte("nested.byte", 123)
+                .Short("nested.short", 12345)
+                .Int("nested.int", 1234567)
+                .Long("nested.long", 123456789)
+                .Float("nested.float", 123.4f)
+                .Double("nested.double", 123.456)
+                .Decimal("nested.decimal", new Decimal(12345))
+                .String("nested.string", "test string value")
+                .DateTime("nested.dateTime", DateTime.Now)
+                .Object("nested.dummyObject", dummy)
+                .List("nested.stringList", stringList)
+                .List("nested.objectList", objectList);
+            
+            Assert.AreEqual(null, document.Type("shouldNotExist"));
+            Assert.AreEqual(typeof(bool), document.Type("bool"));
+            Assert.AreEqual(typeof(byte), document.Type("byte"));
+            Assert.AreEqual(typeof(short), document.Type("short"));
+            Assert.AreEqual(typeof(int), document.Type("int"));
+            Assert.AreEqual(typeof(long), document.Type("long"));
+            Assert.AreEqual(typeof(float), document.Type("float"));
+            Assert.AreEqual(typeof(double), document.Type("double"));
+            Assert.AreEqual(typeof(decimal), document.Type("decimal"));
+            Assert.AreEqual(typeof(string), document.Type("string"));
+            Assert.AreEqual(typeof(DateTime), document.Type("dateTime"));
+            Assert.AreEqual(typeof(List<string>), document.Type("stringList"));
+            Assert.AreEqual(typeof(List<Dummy>), document.Type("objectList"));
+            Assert.AreEqual(typeof(bool), document.Type("nested.bool"));
+            Assert.AreEqual(typeof(byte), document.Type("nested.byte"));
+            Assert.AreEqual(typeof(short), document.Type("nested.short"));
+            Assert.AreEqual(typeof(int), document.Type("nested.int"));
+            Assert.AreEqual(typeof(long), document.Type("nested.long"));
+            Assert.AreEqual(typeof(float), document.Type("nested.float"));
+            Assert.AreEqual(typeof(double), document.Type("nested.double"));
+            Assert.AreEqual(typeof(decimal), document.Type("nested.decimal"));
+            Assert.AreEqual(typeof(string), document.Type("nested.string"));
+            Assert.AreEqual(typeof(DateTime), document.Type("nested.dateTime"));
+            Assert.AreEqual(typeof(List<string>), document.Type("nested.stringList"));
+            Assert.AreEqual(typeof(List<Dummy>), document.Type("nested.objectList"));
+        }
     }
 }

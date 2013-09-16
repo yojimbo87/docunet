@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -8,6 +9,8 @@ namespace Docunet
 {
     public class Docunet : Dictionary<string, object>
     {
+        public static DocunetSettings Settings = new DocunetSettings();
+        
         #region Field getters
         
         public bool Bool(string fieldPath)
@@ -129,8 +132,21 @@ namespace Docunet
         
         public DateTime DateTime(string fieldPath)
         {
+            var value = GetField(fieldPath);
+            
             // TODO: get datetime from field path which is string (ISO date) or long (unix timestamp)
-            return (DateTime)GetField(fieldPath);
+            if (value is string)
+            {
+                return System.DateTime.Parse((string)value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AdjustToUniversal);
+            }
+            else if (value is long)
+            {
+                return DocunetSettings.UnixEpoch.AddSeconds((long)value);
+            }
+            else
+            {
+                return (DateTime)value;
+            }
         }
         
         public object Object(string fieldPath)
@@ -302,15 +318,21 @@ namespace Docunet
             return this;
         }
         
-        public Docunet DateTime(string fieldPath, DateTime value, DateTimeFormat format = DateTimeFormat.DateTime)
+        public Docunet DateTime(string fieldPath, DateTime value)
+        {
+            return DateTime(fieldPath, value, Settings.DateTimeFormat);
+        }
+        
+        public Docunet DateTime(string fieldPath, DateTime value, DateTimeFormat format)
         {
             switch (format)
             {
-                case DateTimeFormat.IsoString:
-                    // TODO: set datetime to field path which is string (ISO date)
+                case DateTimeFormat.Iso8601String:
+                    SetField(fieldPath, value.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo));
                     break;
                 case DateTimeFormat.UnixTimeStamp:
-                    // TODO: set datetime to field path which is long (unix timestamp)
+                    TimeSpan span = (value.ToUniversalTime() - DocunetSettings.UnixEpoch);
+                    SetField(fieldPath, (long)span.TotalSeconds);
                     break;
                 case DateTimeFormat.DateTime:
                 default:

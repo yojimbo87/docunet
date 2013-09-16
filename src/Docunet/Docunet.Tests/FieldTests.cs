@@ -109,17 +109,54 @@ namespace Docunet.Tests
         }
         
         [Test()]
-        public void Should_get_and_set_dateTime_values()
+        public void Should_get_and_set_dateTime_values_with_local_settings()
         {
             var dateNow = DateTime.Now;
             var dateUtcNow = DateTime.UtcNow;
             
             var document = new Docunet()
                 .DateTime("foo", dateNow)
-                .DateTime("bar.baz", dateUtcNow);
+                .DateTime("bar.baz", dateUtcNow)
+                .DateTime("baz1", dateUtcNow, DateTimeFormat.Iso8601String)
+                .DateTime("baz2", dateUtcNow, DateTimeFormat.UnixTimeStamp);
             
             Assert.AreEqual(dateNow, document.DateTime("foo"));
             Assert.AreEqual(dateUtcNow, document.DateTime("bar.baz"));
+            Assert.AreEqual(dateUtcNow.ToString(), document.DateTime("baz1").ToString());
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), document.String("baz1"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), document.DateTime("baz2").ToString("yyyy-MM-dd HH:mm:ss"));
+            
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan span = (dateUtcNow.ToUniversalTime() - unixEpoch);
+            Assert.AreEqual((long)span.TotalSeconds, document.Long("baz2"));
+        }
+        
+        [Test()]
+        public void Should_get_and_set_dateTime_values_with_global_settings()
+        {
+            var dateNow = DateTime.Now;
+            var dateUtcNow = DateTime.UtcNow;
+            
+            var document = new Docunet();
+            
+            Docunet.Settings.DateTimeFormat = DateTimeFormat.Iso8601String;
+            document.DateTime("baz1", dateUtcNow);
+            
+            Docunet.Settings.DateTimeFormat = DateTimeFormat.UnixTimeStamp;
+            document.DateTime("baz2", dateUtcNow);
+            
+            Docunet.Settings.DateTimeFormat = DateTimeFormat.DateTime;
+            document.DateTime("baz3", dateUtcNow);
+            
+            Assert.AreEqual(dateUtcNow.ToString(), document.DateTime("baz1").ToString());
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), document.String("baz1"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), document.DateTime("baz2").ToString("yyyy-MM-dd HH:mm:ss"));
+            
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan span = (dateUtcNow.ToUniversalTime() - unixEpoch);
+            Assert.AreEqual((long)span.TotalSeconds, document.Long("baz2"));
+            
+            Assert.AreEqual(dateUtcNow, document.DateTime("baz3"));
         }
         
         [Test()]

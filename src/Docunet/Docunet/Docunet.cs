@@ -129,6 +129,7 @@ namespace Docunet
         
         public DateTime DateTime(string fieldPath)
         {
+            // TODO: get datetime from field path which is string (ISO date) or long (unix timestamp)
             return (DateTime)GetField(fieldPath);
         }
         
@@ -301,9 +302,21 @@ namespace Docunet
             return this;
         }
         
-        public Docunet DateTime(string fieldPath, DateTime value)
+        public Docunet DateTime(string fieldPath, DateTime value, DateTimeFormat format = DateTimeFormat.DateTime)
         {
-            SetField(fieldPath, value);
+            switch (format)
+            {
+                case DateTimeFormat.IsoString:
+                    // TODO: set datetime to field path which is string (ISO date)
+                    break;
+                case DateTimeFormat.UnixTimeStamp:
+                    // TODO: set datetime to field path which is long (unix timestamp)
+                    break;
+                case DateTimeFormat.DateTime:
+                default:
+                    SetField(fieldPath, value);
+                    break;
+            }
 
             return this;
         }
@@ -487,6 +500,118 @@ namespace Docunet
                     else
                     {
                         return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        public bool IsNull(string fieldPath)
+        {
+            var currentField = "";
+            var arrayContent = "";
+            
+            if (fieldPath.Contains("."))
+            {
+                var fields = fieldPath.Split('.');
+                var iteration = 1;
+                var embeddedDocument = this;
+                
+                foreach (var field in fields)
+                {
+                    currentField = field;
+                    arrayContent = "";
+                    
+                    if (field.Contains("["))
+                    {
+                        var firstIndex = field.IndexOf('[');
+                        var lastIndex = field.IndexOf(']');
+                        
+                        arrayContent = field.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                        currentField = field.Substring(0, firstIndex);
+                    }
+                    
+                    if (iteration == fields.Length)
+                    {
+                        if (embeddedDocument.ContainsKey(currentField))
+                        {
+                            // it's array - should check if there is value at specific index
+                            if (arrayContent != "")
+                            {
+                                var collection = (IList)embeddedDocument[currentField];
+                                var index = int.Parse(arrayContent);                        
+                                // passed array index is less than total number of elements in the array
+                                if (collection.Count > index)
+                                {
+                                    if (collection[index] == null)
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                            // it's single value
+                            else
+                            {
+                                if (embeddedDocument[currentField] == null)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                        
+                        break;
+                    }
+
+                    if (embeddedDocument.ContainsKey(currentField))
+                    {
+                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                    }
+                    else
+                    {
+                        // if current field in path isn't present
+                        break;
+                    }
+
+                    iteration++;
+                }
+            }
+            else
+            {
+                currentField = fieldPath;
+                
+                if (fieldPath.Contains("["))
+                {
+                    var firstIndex = fieldPath.IndexOf('[');
+                    var lastIndex = fieldPath.IndexOf(']');
+                    
+                    arrayContent = fieldPath.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                    currentField = fieldPath.Substring(0, firstIndex);
+                }
+                
+                if (this.ContainsKey(currentField))
+                {
+                    // it's array - should check if there is value at specific index
+                    if (arrayContent != "")
+                    {
+                        var collection = (IList)this[currentField];
+                        var index = int.Parse(arrayContent);                        
+                        // passed array index is less than total number of elements in the array
+                        if (collection.Count > index)
+                        {
+                            if (collection[index] == null)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    // it's single value
+                    else
+                    {
+                        if (this[currentField] == null)
+                        {
+                            return true;
+                        }
                     }
                 }
             }

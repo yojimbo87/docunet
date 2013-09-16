@@ -189,6 +189,26 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_check_for_null_value()
+        {
+            var document = new Docunet()
+                .Object("foo1", null)
+                .List("foo2", new List<object> { 1, 2, null })
+                .String("foo3", "test string value")
+                .Object("bar.baz1", null)
+                .List("bar.baz2", new List<object> { 1, 2, null })
+                .String("bar.baz3", "test string value");
+            
+            Assert.AreEqual(true, document.IsNull("foo1"));
+            Assert.AreEqual(false, document.IsNull("foo2[1]"));
+            Assert.AreEqual(true, document.IsNull("foo2[2]"));
+            Assert.AreEqual(true, document.IsNull("bar.baz1"));
+            Assert.AreEqual(false, document.IsNull("bar.baz2[1]"));
+            Assert.AreEqual(true, document.IsNull("bar.baz2[2]"));
+            Assert.AreEqual(false, document.IsNull("bar.baz3"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_generic_object_converted_to_document()
         {
             var dummy1 = new Dummy();

@@ -4,12 +4,24 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Docunet
 {
     public class Docunet : Dictionary<string, object>
     {
         public static DocunetSettings Settings = new DocunetSettings();
+        
+        public Docunet() {  }
+        
+        public Docunet(string json)
+        {
+            foreach(KeyValuePair<string, object> field in Deserialize(json))
+            {
+                this.Add(field.Key, field.Value);
+            }
+        }
         
         #region Field getters
         
@@ -23,7 +35,7 @@ namespace Docunet
             }
             else
             {
-                return (bool)fieldValue;
+                return Convert.ToBoolean(fieldValue);
             }
         }
         
@@ -37,7 +49,7 @@ namespace Docunet
             }
             else
             {
-                return (byte)fieldValue;
+                return Convert.ToByte(fieldValue);
             }
         }
         
@@ -51,7 +63,7 @@ namespace Docunet
             }
             else
             {
-                return (short)fieldValue;
+                return Convert.ToInt16(fieldValue);
             }
         }
         
@@ -65,7 +77,7 @@ namespace Docunet
             }
             else
             {
-                return (int)fieldValue;
+                return Convert.ToInt32(fieldValue);
             }
         }
         
@@ -79,7 +91,7 @@ namespace Docunet
             }
             else
             {
-                return (long)fieldValue;
+                return Convert.ToInt64(fieldValue);
             }
         }
         
@@ -93,7 +105,7 @@ namespace Docunet
             }
             else
             {
-                return (float)fieldValue;
+                return Convert.ToSingle(fieldValue);
             }
         }
         
@@ -107,7 +119,7 @@ namespace Docunet
             }
             else
             {
-                return (double)fieldValue;
+                return Convert.ToDouble(fieldValue);
             }
         }
         
@@ -121,7 +133,7 @@ namespace Docunet
             }
             else
             {
-                return (decimal)fieldValue;
+                return Convert.ToDecimal(fieldValue);
             }
         }
         
@@ -134,7 +146,6 @@ namespace Docunet
         {
             var value = GetField(fieldPath);
             
-            // TODO: get datetime from field path which is string (ISO date) or long (unix timestamp)
             if (value is string)
             {
                 return System.DateTime.Parse((string)value, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AdjustToUniversal);
@@ -166,7 +177,55 @@ namespace Docunet
         
         public List<T> List<T>(string fieldPath)
         {
-            return ((IEnumerable)GetField(fieldPath)).Cast<T>().ToList();
+            var collection = new List<T>();
+            var type = typeof(T);
+            var data = GetField(fieldPath);
+            
+            if (data is List<T>)
+            {
+                collection = ((IEnumerable)data).Cast<T>().ToList();
+            }
+            else
+            {
+                switch (type.Name)
+                {
+                    case "Boolean":
+                        collection = ((List<object>)data).Select(Convert.ToBoolean).ToList() as List<T>;
+                        break;
+                    case "Byte":
+                        collection = ((List<object>)data).Select(Convert.ToByte).ToList() as List<T>;
+                        break;
+                    case "Int16":
+                        collection = ((List<object>)data).Select(Convert.ToInt16).ToList() as List<T>;
+                        break;
+                    case "Int32":
+                        collection = ((List<object>)data).Select(Convert.ToInt32).ToList() as List<T>;
+                        break;
+                    case "Int64":
+                        collection = ((List<object>)data).Select(Convert.ToInt64).ToList() as List<T>;
+                        break;
+                    case "Single":
+                        collection = ((List<object>)data).Select(Convert.ToSingle).ToList() as List<T>;
+                        break;
+                    case "Double":
+                        collection = ((List<object>)data).Select(Convert.ToDouble).ToList() as List<T>;
+                        break;
+                    case "Decimal":
+                        collection = ((List<object>)data).Select(Convert.ToDecimal).ToList() as List<T>;
+                        break;
+                    case "DateTime":
+                        collection = ((List<object>)data).Select(Convert.ToDateTime).ToList() as List<T>;
+                        break;
+                    case "String":
+                        collection = ((List<object>)data).Select(Convert.ToString).ToList() as List<T>;
+                        break;
+                    default:
+                        collection = ((IEnumerable)data).Cast<T>().ToList();
+                        break;
+                }
+            }
+            
+            return collection;
         }
         
         private object GetField(string fieldPath)
@@ -328,7 +387,7 @@ namespace Docunet
             switch (format)
             {
                 case DateTimeFormat.Iso8601String:
-                    SetField(fieldPath, value.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo));
+                    SetField(fieldPath, value.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo));
                     break;
                 case DateTimeFormat.UnixTimeStamp:
                     TimeSpan span = (value.ToUniversalTime() - DocunetSettings.UnixEpoch);
@@ -1202,5 +1261,112 @@ namespace Docunet
             
             return documents;
         }
+        
+        #region Serialization
+        
+        public string Serialize()
+        {
+            return Serialize(this);
+        }
+        
+        /// <summary>
+        /// Serializes specified object to JSON string.
+        /// </summary>
+        public static string Serialize<T>(T obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+        
+        #endregion
+        
+        #region Deserialization
+
+        public void Parse(string json)
+        {
+            foreach(KeyValuePair<string, object> field in Deserialize(json))
+            {
+                this.Add(field.Key, field.Value);
+            }
+        }
+        
+        /// <summary>
+        /// Deserializes specified json string to document object.
+        /// </summary>
+        public static Docunet Deserialize(string json)
+        {
+            var document = new Docunet();
+            var fields = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(json);
+            
+            foreach (KeyValuePair<string, JToken> field in fields)
+            {
+                switch (field.Value.Type)
+                {
+                    case JTokenType.Array:
+                        document.Add(field.Key, DeserializeArray((JArray)field.Value));
+                        break;
+                    case JTokenType.Object:
+                        document.Add(field.Key, DeserializeEmbeddedObject((JObject)field.Value));
+                        break;
+                    default:
+                        document.Add(field.Key, DeserializeValue(field.Value));
+                        break;
+                }
+            }
+            
+            return document;
+        }
+
+        private static object DeserializeEmbeddedObject(JObject jObject)
+        {
+            var embedded = new Docunet();
+
+            foreach (KeyValuePair<string, JToken> field in jObject)
+            {
+                switch (field.Value.Type)
+                {
+                    case JTokenType.Array:
+                        embedded.Add(field.Key, DeserializeArray((JArray)field.Value));
+                        break;
+                    case JTokenType.Object:
+                        embedded.Add(field.Key, DeserializeEmbeddedObject((JObject)field.Value));
+                        break;
+                    default:
+                        embedded.Add(field.Key, DeserializeValue(field.Value));
+                        break;
+                }
+            }
+
+            return embedded;
+        }
+
+        private static List<object> DeserializeArray(JArray jArray)
+        {
+            var array = new List<object>();
+            
+            foreach (JToken item in jArray)
+            {
+                switch (item.Type)
+                {
+                    case JTokenType.Array:
+                        array.Add(DeserializeArray((JArray)item));
+                        break;
+                    case JTokenType.Object:
+                        array.Add(DeserializeEmbeddedObject((JObject)item));
+                        break;
+                    default:
+                        array.Add(DeserializeValue(item));
+                        break;
+                }
+            }
+            
+            return array;
+        }
+        
+        private static object DeserializeValue(JToken token)
+        {
+            return token.ToObject<object>();
+        }
+        
+        #endregion
     }
 }

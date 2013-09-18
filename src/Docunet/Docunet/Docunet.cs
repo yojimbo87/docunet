@@ -17,7 +17,7 @@ namespace Docunet
         
         public Docunet(string json)
         {
-            foreach(KeyValuePair<string, object> field in Deserialize(json))
+            foreach(KeyValuePair<string, object> field in DeserializeDocument(json))
             {
                 this.Add(field.Key, field.Value);
             }
@@ -1283,16 +1283,69 @@ namespace Docunet
 
         public void Parse(string json)
         {
-            foreach(KeyValuePair<string, object> field in Deserialize(json))
+            foreach(KeyValuePair<string, object> field in DeserializeDocument(json))
             {
                 this.Add(field.Key, field.Value);
             }
         }
         
+        public static List<T> DeserializeArray<T>(string json)
+        {
+            var collection = new List<T>();
+            var type = typeof(T);
+            var data = DeserializeArray(JArray.Parse(json));
+            
+            if (data is List<T>)
+            {
+                collection = ((IEnumerable)data).Cast<T>().ToList();
+            }
+            else
+            {
+                switch (type.Name)
+                {
+                    case "Boolean":
+                        collection = data.Select(Convert.ToBoolean).ToList() as List<T>;
+                        break;
+                    case "Byte":
+                        collection = data.Select(Convert.ToByte).ToList() as List<T>;
+                        break;
+                    case "Int16":
+                        collection = data.Select(Convert.ToInt16).ToList() as List<T>;
+                        break;
+                    case "Int32":
+                        collection = data.Select(Convert.ToInt32).ToList() as List<T>;
+                        break;
+                    case "Int64":
+                        collection = data.Select(Convert.ToInt64).ToList() as List<T>;
+                        break;
+                    case "Single":
+                        collection = data.Select(Convert.ToSingle).ToList() as List<T>;
+                        break;
+                    case "Double":
+                        collection = data.Select(Convert.ToDouble).ToList() as List<T>;
+                        break;
+                    case "Decimal":
+                        collection = data.Select(Convert.ToDecimal).ToList() as List<T>;
+                        break;
+                    case "DateTime":
+                        collection = data.Select(Convert.ToDateTime).ToList() as List<T>;
+                        break;
+                    case "String":
+                        collection = data.Select(Convert.ToString).ToList() as List<T>;
+                        break;
+                    default:
+                        collection = ((IEnumerable)data).Cast<T>().ToList();
+                        break;
+                }
+            }
+            
+            return collection;
+        }
+        
         /// <summary>
         /// Deserializes specified json string to document object.
         /// </summary>
-        public static Docunet Deserialize(string json)
+        public static Docunet DeserializeDocument(string json)
         {
             var document = new Docunet();
             var fields = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(json);

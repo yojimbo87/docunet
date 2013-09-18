@@ -131,13 +131,27 @@ namespace Docunet.Tests
         }
         
         [Test()]
-        public void Should_deserialize_array()
+        public void Should_deserialize_arrays()
         {
-            var json = "[1, 2, 3]";
+            var intJson = "[1, 2, 3]";
+            var stringJson = "[\"one\",\"two\",\"three\"]";
+            var documentJson = "[{\"foo\":\"one\",\"bar\":1},{\"foo\":\"two\",\"bar\":2},{\"foo\":\"three\",\"bar\":3}]";
             
-            var obj = new Docunet(json);
+            var intArray = Docunet.DeserializeArray<int>(intJson);
+            var stringArray = Docunet.DeserializeArray<string>(stringJson);
+            var documentArray = Docunet.DeserializeArray<Docunet>(documentJson);
             
-            Assert.AreEqual(true, true);
+            Assert.AreEqual(new List<int> { 1, 2, 3 }, intArray);
+            Assert.AreEqual(new List<string> { "one", "two", "three" }, stringArray);
+            
+            var expectedDocumentArray = new List<Docunet>
+            {
+                new Docunet().String("foo", "one").Int("bar", 1),
+                new Docunet().String("foo", "two").Int("bar", 2),
+                new Docunet().String("foo", "three").Int("bar", 3)
+            };
+            
+            Assert.AreEqual(expectedDocumentArray, documentArray);
         }
     }
 }

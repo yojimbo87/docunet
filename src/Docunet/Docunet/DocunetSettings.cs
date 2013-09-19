@@ -10,7 +10,7 @@ namespace Docunet
         
         public DocunetSettings()
         {
-            DateTimeFormat = DateTimeFormat.DateTime;
+            DateTimeFormat = DateTimeFormat.DateTimeObject;
         }
     }
 }

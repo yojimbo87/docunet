@@ -145,7 +145,7 @@ namespace Docunet.Tests
             Docunet.Settings.DateTimeFormat = DateTimeFormat.UnixTimeStamp;
             document.DateTime("baz2", dateUtcNow);
             
-            Docunet.Settings.DateTimeFormat = DateTimeFormat.DateTime;
+            Docunet.Settings.DateTimeFormat = DateTimeFormat.DateTimeObject;
             document.DateTime("baz3", dateUtcNow);
             
             Assert.AreEqual(dateUtcNow.ToString(), document.DateTime("baz1").ToString());

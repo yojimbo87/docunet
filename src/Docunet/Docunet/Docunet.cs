@@ -393,7 +393,7 @@ namespace Docunet
                     TimeSpan span = (value.ToUniversalTime() - DocunetSettings.UnixEpoch);
                     SetField(fieldPath, (long)span.TotalSeconds);
                     break;
-                case DateTimeFormat.DateTime:
+                case DateTimeFormat.DateTimeObject:
                 default:
                     SetField(fieldPath, value);
                     break;

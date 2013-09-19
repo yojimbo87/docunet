@@ -136,10 +136,12 @@ namespace Docunet.Tests
             var intJson = "[1, 2, 3]";
             var stringJson = "[\"one\",\"two\",\"three\"]";
             var documentJson = "[{\"foo\":\"one\",\"bar\":1},{\"foo\":\"two\",\"bar\":2},{\"foo\":\"three\",\"bar\":3}]";
+            var nestedDocumentJson = "[{\"foo\":\"one\",\"bar\":{\"foo\":[1,2,3],\"bar\":1}},{\"foo\":\"two\",\"bar\":{\"foo\":[1,2,3],\"bar\":2}},{\"foo\":\"three\",\"bar\":{\"foo\":[1,2,3],\"bar\":3}}]";
             
             var intArray = Docunet.DeserializeArray<int>(intJson);
             var stringArray = Docunet.DeserializeArray<string>(stringJson);
             var documentArray = Docunet.DeserializeArray<Docunet>(documentJson);
+            var nestedDocumentArray = Docunet.DeserializeArray<Docunet>(nestedDocumentJson);
             
             Assert.AreEqual(new List<int> { 1, 2, 3 }, intArray);
             Assert.AreEqual(new List<string> { "one", "two", "three" }, stringArray);
@@ -152,6 +154,30 @@ namespace Docunet.Tests
             };
             
             Assert.AreEqual(expectedDocumentArray, documentArray);
+            
+            var expectedNestedDocumentArray = new List<Docunet>
+            {
+                new Docunet()
+                    .String("foo", "one")
+                    .Document("bar", new Docunet()
+                              .List<int>("foo", new List<int> { 1, 2, 3 })
+                              .Int("bar", 1)
+                    ),
+                new Docunet()
+                    .String("foo", "two")
+                    .Document("bar", new Docunet()
+                              .List<int>("foo", new List<int> { 1, 2, 3 })
+                              .Int("bar", 2)
+                    ),
+                new Docunet()
+                    .String("foo", "three")
+                    .Document("bar", new Docunet()
+                              .List<int>("foo", new List<int> { 1, 2, 3 })
+                              .Int("bar", 3)
+                    )
+            };
+            
+            Assert.AreEqual(expectedNestedDocumentArray, nestedDocumentArray);
         }
     }
 }

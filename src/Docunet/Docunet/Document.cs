@@ -175,6 +175,13 @@ namespace Docunet
             return (Document)GetField(fieldPath);
         }
         
+        public T Enum<T>(string fieldPath)
+        {
+            var type = typeof(T);
+            
+            return (T)System.Enum.ToObject(type, GetField(fieldPath));
+        }
+        
         public List<T> List<T>(string fieldPath)
         {
             var collection = new List<T>();
@@ -413,7 +420,7 @@ namespace Docunet
         public Document Object<T>(string fieldPath, T inputObject)
         {
             SetField(fieldPath, inputObject);
-
+            
             return this;
         }
         
@@ -427,6 +434,13 @@ namespace Docunet
             {
                 SetField(fieldPath, ToDocument<T>(inputObject));
             }
+            
+            return this;
+        }
+        
+        public Document Enum<T>(string fieldPath, T inputObject)
+        {
+            SetField(fieldPath, inputObject);
             
             return this;
         }

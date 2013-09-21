@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="DeserializationTests.cs" />
     <Compile Include="Dummy.cs" />
+    <Compile Include="DummyEnum.cs" />
     <Compile Include="FieldTests.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="NestedDummy.cs" />

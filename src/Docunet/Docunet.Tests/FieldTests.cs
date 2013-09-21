@@ -282,6 +282,25 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_get_and_set_enum()
+        {
+            var document = new Document()
+                .Enum("foo1", DummyEnum.Option1)
+                .Enum("foo2", DummyEnum.Option2)
+                .Enum("foo3", DummyEnum.Option3)
+                .Enum("bar.baz1", DummyEnum.Option1)
+                .Enum("bar.baz2", DummyEnum.Option2)
+                .Enum("bar.baz3", DummyEnum.Option3);
+            
+            Assert.AreEqual(DummyEnum.Option1, document.Enum<DummyEnum>("foo1"));
+            Assert.AreEqual(DummyEnum.Option2, document.Enum<DummyEnum>("foo2"));
+            Assert.AreEqual(DummyEnum.Option3, document.Enum<DummyEnum>("foo3"));
+            Assert.AreEqual(DummyEnum.Option1, document.Enum<DummyEnum>("bar.baz1"));
+            Assert.AreEqual(DummyEnum.Option2, document.Enum<DummyEnum>("bar.baz2"));
+            Assert.AreEqual(DummyEnum.Option3, document.Enum<DummyEnum>("bar.baz3"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_flat_list()
         {
             var stringList = new List<string> { "one", "two", "three" };

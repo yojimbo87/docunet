@@ -882,6 +882,16 @@ namespace Docunet
         
         #endregion
         
+        public void Replace(Document document)
+        {
+            this.Clear();
+            
+            foreach(KeyValuePair<string, object> field in document)
+            {
+                this.Add(field.Key, field.Value);
+            }
+        }
+        
         public Document Except(params string[] fields)
         {
             var document = Clone();

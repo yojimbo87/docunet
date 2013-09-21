@@ -150,5 +150,24 @@ namespace Docunet.Tests
             Assert.AreEqual(document2.List<string>("StringList"), nestedDummy.StringList);
             Assert.AreEqual(document2.List<Dummy>("ObjectList"), nestedDummy.ObjectList);
         }
+        
+        [Test()]
+        public void Should_replace_fields_with_another_document()
+        {
+            var sourceDocument = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345);
+            
+            var document = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321);
+            
+            document.Replace(sourceDocument);
+            
+            Assert.AreEqual(sourceDocument.String("foo1"), document.String("foo1"));
+            Assert.AreEqual(false, document.Has("foo2"));
+            Assert.AreEqual(sourceDocument.Int("bar.baz1"), document.Int("bar.baz1"));
+            Assert.AreEqual(false, document.Has("bar.baz2"));
+        }
     }
 }

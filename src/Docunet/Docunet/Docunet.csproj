@@ -44,8 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DateTimeFormat.cs" />
-    <Compile Include="Docunet.cs" />
-    <Compile Include="DocunetSettings.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="DocumentSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

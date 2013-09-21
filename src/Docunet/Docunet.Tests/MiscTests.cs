@@ -12,7 +12,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_clone_document_and_change_values_of_new_one()
         {
-            var document1 = new Docunet()
+            var document1 = new Document()
                 .String("foo1", "test string value 1")
                 .String("foo2", "test string value 2")
                 .String("bar.baz1", "test value string 1")
@@ -36,7 +36,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_retrieve_new_document_except_specific_fields()
         {
-            var document1 = new Docunet()
+            var document1 = new Document()
                 .String("foo1", "test string value 1")
                 .String("foo2", "test string value 2")
                 .String("bar.baz1", "test value string 1")
@@ -58,7 +58,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_retrieve_new_document_only_with_specific_fields()
         {
-            var document1 = new Docunet()
+            var document1 = new Document()
                 .String("foo1", "test string value 1")
                 .String("foo2", "test string value 2")
                 .String("bar.baz1", "test value string 1")
@@ -82,29 +82,29 @@ namespace Docunet.Tests
         {
             var list = new List<string> { "one", "two", "three" };
             
-            var dummies = new List<Docunet> 
+            var dummies = new List<Document> 
             { 
-                new Docunet().String("foo", "Dummy one").Int("bar", 1),
-                new Docunet().String("foo", "Dummy two").Int("bar", 2),
-                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+                new Document().String("foo", "Dummy one").Int("bar", 1),
+                new Document().String("foo", "Dummy two").Int("bar", 2),
+                new Document().String("foo", "Dummy three").Int("bar", 3)
             };
             
-            var document1 = new Docunet()
+            var document1 = new Document()
                 .String("foo", "test string value")
                 .String("bar.baz1", "test value string")
                 .List("bar.baz2", list)
                 .List("bar.baz3", dummies);
             
-            var document2 = new Docunet()
+            var document2 = new Document()
                 .String("foo", "test string value")
                 .String("bar.baz1", "test value string")
                 .List("bar.baz2", list)
                 .List("bar.baz3", dummies);
             
-            var document3 = new Docunet()
+            var document3 = new Document()
                 .String("foo", "test string value");
             
-            var document4 = new Docunet()
+            var document4 = new Document()
                 .String("foo", "test string value")
                 .String("bar.baz1", "test value string")
                 .List("bar.baz2", new List<string> { "one", "two" })
@@ -118,7 +118,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_convert_from_docunet_to_generic_object()
         {
-            var document1 = new Docunet()
+            var document1 = new Document()
                 .String("Foo", "foo string value")
                 .Int("Bar", 12345);
             
@@ -135,7 +135,7 @@ namespace Docunet.Tests
                 new Dummy() { Foo = "three", Bar = 3 }
             };
             
-            var document2 = new Docunet()
+            var document2 = new Document()
                 .String("Foo", "foo string value")
                 .Int("Bar", 12345)
                 .Object("Baz", dummy1)

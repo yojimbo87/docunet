@@ -2,13 +2,13 @@
 
 namespace Docunet
 {
-    public class DocunetSettings
+    public class DocumentSettings
     {
         internal static DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         
         public DateTimeFormat DateTimeFormat { get; set; }
         
-        public DocunetSettings()
+        public DocumentSettings()
         {
             DateTimeFormat = DateTimeFormat.DateTimeObject;
         }

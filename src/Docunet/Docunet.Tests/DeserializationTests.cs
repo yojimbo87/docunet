@@ -14,7 +14,7 @@ namespace Docunet.Tests
         public void Should_deserialize_null()
         {
             var json = "{\"null\":null,\"embedded\":{\"null\":null}}";
-            var document = new Docunet(json);
+            var document = new Document(json);
 
             // check for fields existence
             Assert.AreEqual(true, document.Has("null"));
@@ -38,7 +38,7 @@ namespace Docunet.Tests
         public void Should_deserialize_boolean()
         {
             var json = "{\"isTrue\":true,\"isFalse\":false,\"embedded\":{\"isTrue\":true,\"isFalse\":false},\"array\":[true,false]}";
-            var document = new Docunet(json);
+            var document = new Document(json);
 
             // check for fields existence
             Assert.AreEqual(true, document.Has("isTrue"));
@@ -63,7 +63,7 @@ namespace Docunet.Tests
         public void Should_deserialize_numbers()
         {
             var json = "{\"integer\":123,\"float\":3.14,\"embedded\":{\"integer\":123,\"float\":3.14},\"intArray\":[123,456],\"floatArray\":[2.34,4.567]}";
-            var document = new Docunet(json);
+            var document = new Document(json);
             
             // check for fields existence
             Assert.AreEqual(true, document.Has("integer"));
@@ -90,7 +90,7 @@ namespace Docunet.Tests
         public void Should_deserialize_strings()
         {
             var json = "{\"string\":\"foo bar\",\"embedded\":{\"string\":\"foo bar\",\"array\":[\"foo\",\"bar\"]},\"array\":[\"foo\",\"bar\"]}";
-            var document = new Docunet(json);
+            var document = new Document(json);
             
             // check for fields existence
             Assert.AreEqual(true, document.Has("string"));
@@ -119,7 +119,7 @@ namespace Docunet.Tests
             TimeSpan span = (dateTimeUnix - unixEpoch);
             
             var json = "{\"datetime1\":\"2008-12-20T02:12:02.363Z\",\"datetime2\":" + (long)span.TotalSeconds + "}";
-            var document = new Docunet(json);
+            var document = new Document(json);
             
             // check if the fields existence
             Assert.AreEqual(true, document.Has("datetime1"));
@@ -138,40 +138,40 @@ namespace Docunet.Tests
             var documentJson = "[{\"foo\":\"one\",\"bar\":1},{\"foo\":\"two\",\"bar\":2},{\"foo\":\"three\",\"bar\":3}]";
             var nestedDocumentJson = "[{\"foo\":\"one\",\"bar\":{\"foo\":[1,2,3],\"bar\":1}},{\"foo\":\"two\",\"bar\":{\"foo\":[1,2,3],\"bar\":2}},{\"foo\":\"three\",\"bar\":{\"foo\":[1,2,3],\"bar\":3}}]";
             
-            var intArray = Docunet.DeserializeArray<int>(intJson);
-            var stringArray = Docunet.DeserializeArray<string>(stringJson);
-            var documentArray = Docunet.DeserializeArray<Docunet>(documentJson);
-            var nestedDocumentArray = Docunet.DeserializeArray<Docunet>(nestedDocumentJson);
+            var intArray = Document.DeserializeArray<int>(intJson);
+            var stringArray = Document.DeserializeArray<string>(stringJson);
+            var documentArray = Document.DeserializeArray<Document>(documentJson);
+            var nestedDocumentArray = Document.DeserializeArray<Document>(nestedDocumentJson);
             
             Assert.AreEqual(new List<int> { 1, 2, 3 }, intArray);
             Assert.AreEqual(new List<string> { "one", "two", "three" }, stringArray);
             
-            var expectedDocumentArray = new List<Docunet>
+            var expectedDocumentArray = new List<Document>
             {
-                new Docunet().String("foo", "one").Int("bar", 1),
-                new Docunet().String("foo", "two").Int("bar", 2),
-                new Docunet().String("foo", "three").Int("bar", 3)
+                new Document().String("foo", "one").Int("bar", 1),
+                new Document().String("foo", "two").Int("bar", 2),
+                new Document().String("foo", "three").Int("bar", 3)
             };
             
             Assert.AreEqual(expectedDocumentArray, documentArray);
             
-            var expectedNestedDocumentArray = new List<Docunet>
+            var expectedNestedDocumentArray = new List<Document>
             {
-                new Docunet()
+                new Document()
                     .String("foo", "one")
-                    .Document("bar", new Docunet()
+                    .Docunet("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 1)
                     ),
-                new Docunet()
+                new Document()
                     .String("foo", "two")
-                    .Document("bar", new Docunet()
+                    .Docunet("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 2)
                     ),
-                new Docunet()
+                new Document()
                     .String("foo", "three")
-                    .Document("bar", new Docunet()
+                    .Docunet("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 3)
                     )

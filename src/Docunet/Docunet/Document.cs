@@ -9,13 +9,13 @@ using Newtonsoft.Json.Linq;
 
 namespace Docunet
 {
-    public class Docunet : Dictionary<string, object>
+    public class Document : Dictionary<string, object>
     {
-        public static DocunetSettings Settings = new DocunetSettings();
+        public static DocumentSettings Settings = new DocumentSettings();
         
-        public Docunet() {  }
+        public Document() {  }
         
-        public Docunet(string json)
+        public Document(string json)
         {
             foreach(KeyValuePair<string, object> field in DeserializeDocument(json))
             {
@@ -152,7 +152,7 @@ namespace Docunet
             }
             else if (value is long)
             {
-                return DocunetSettings.UnixEpoch.AddSeconds((long)value);
+                return DocumentSettings.UnixEpoch.AddSeconds((long)value);
             }
             else
             {
@@ -170,9 +170,9 @@ namespace Docunet
             return (T)GetField(fieldPath);
         }
         
-        public Docunet Document(string fieldPath)
+        public Document Docunet(string fieldPath)
         {
-            return (Docunet)GetField(fieldPath);
+            return (Document)GetField(fieldPath);
         }
         
         public List<T> List<T>(string fieldPath)
@@ -265,7 +265,7 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -298,7 +298,7 @@ namespace Docunet
             return null;
         }
         
-        private object GetFieldValue(string fieldName, string arrayContent, Docunet fieldObject)
+        private object GetFieldValue(string fieldName, string arrayContent, Document fieldObject)
         {
             if (arrayContent == "")
             {
@@ -314,75 +314,75 @@ namespace Docunet
         
         #region Field setters
         
-        public Docunet Bool(string fieldPath, bool value)
+        public Document Bool(string fieldPath, bool value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Byte(string fieldPath, byte value)
+        public Document Byte(string fieldPath, byte value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Short(string fieldPath, short value)
+        public Document Short(string fieldPath, short value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Int(string fieldPath, int value)
+        public Document Int(string fieldPath, int value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Long(string fieldPath, long value)
+        public Document Long(string fieldPath, long value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Float(string fieldPath, float value)
+        public Document Float(string fieldPath, float value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Double(string fieldPath, double value)
+        public Document Double(string fieldPath, double value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet Decimal(string fieldPath, decimal value)
+        public Document Decimal(string fieldPath, decimal value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet String(string fieldPath, string value)
+        public Document String(string fieldPath, string value)
         {
             SetField(fieldPath, value);
 
             return this;
         }
         
-        public Docunet DateTime(string fieldPath, DateTime value)
+        public Document DateTime(string fieldPath, DateTime value)
         {
             return DateTime(fieldPath, value, Settings.DateTimeFormat);
         }
         
-        public Docunet DateTime(string fieldPath, DateTime value, DateTimeFormat format)
+        public Document DateTime(string fieldPath, DateTime value, DateTimeFormat format)
         {
             switch (format)
             {
@@ -390,7 +390,7 @@ namespace Docunet
                     SetField(fieldPath, value.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo));
                     break;
                 case DateTimeFormat.UnixTimeStamp:
-                    TimeSpan span = (value.ToUniversalTime() - DocunetSettings.UnixEpoch);
+                    TimeSpan span = (value.ToUniversalTime() - DocumentSettings.UnixEpoch);
                     SetField(fieldPath, (long)span.TotalSeconds);
                     break;
                 case DateTimeFormat.DateTimeObject:
@@ -403,23 +403,23 @@ namespace Docunet
         }
         
         // used for null inputObject
-        public Docunet Object(string fieldPath, object inputObject)
+        public Document Object(string fieldPath, object inputObject)
         {
             SetField(fieldPath, inputObject);
 
             return this;
         }
         
-        public Docunet Object<T>(string fieldPath, T inputObject)
+        public Document Object<T>(string fieldPath, T inputObject)
         {
             SetField(fieldPath, inputObject);
 
             return this;
         }
         
-        public Docunet Document<T>(string fieldPath, T inputObject)
+        public Document Docunet<T>(string fieldPath, T inputObject)
         {
-            if (inputObject is Docunet)
+            if (inputObject is Document)
             {
                 SetField(fieldPath, inputObject);
             }
@@ -431,7 +431,7 @@ namespace Docunet
             return this;
         }
         
-        public Docunet List<T>(string fieldPath, List<T> inputCollection)
+        public Document List<T>(string fieldPath, List<T> inputCollection)
         {
             SetField(fieldPath, inputCollection);
 
@@ -464,12 +464,12 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(field))
                     {
-                        embeddedDocument = (Docunet)embeddedDocument[field];
+                        embeddedDocument = (Document)embeddedDocument[field];
                     }
                     else
                     {
                         // if document which contains the field doesn't exist create it first
-                        var tempDocument = new Docunet();
+                        var tempDocument = new Document();
                         embeddedDocument.Add(field, tempDocument);
                         embeddedDocument = tempDocument;
                     }
@@ -542,7 +542,7 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -646,7 +646,7 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -737,7 +737,7 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -770,7 +770,7 @@ namespace Docunet
             return null;
         }
         
-        public Docunet Drop(string fieldPath)
+        public Document Drop(string fieldPath)
         {
             var currentField = "";
             var arrayContent = "";
@@ -807,7 +807,7 @@ namespace Docunet
 
                     if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Docunet)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                     }
                     else
                     {
@@ -842,20 +842,20 @@ namespace Docunet
         
         #region Clone
         
-        public Docunet Clone()
+        public Document Clone()
         {
             return Clone(this);
         }
         
-        private Docunet Clone(Docunet document)
+        private Document Clone(Document document)
         {
-            var clonedDocument = new Docunet();
+            var clonedDocument = new Document();
             
             foreach (KeyValuePair<string, object> field in document)
             {
-                if (field.Value is Docunet)
+                if (field.Value is Document)
                 {
-                    clonedDocument.Add(field.Key, Clone((Docunet)field.Value));
+                    clonedDocument.Add(field.Key, Clone((Document)field.Value));
                 }
                 else
                 {
@@ -868,7 +868,7 @@ namespace Docunet
         
         #endregion
         
-        public Docunet Except(params string[] fields)
+        public Document Except(params string[] fields)
         {
             var document = Clone();
             
@@ -880,9 +880,9 @@ namespace Docunet
             return document;
         }
         
-        public Docunet Only(params string[] fields)
+        public Document Only(params string[] fields)
         {
-            var document = new Docunet();
+            var document = new Document();
             
             foreach (string field in fields)
             {
@@ -894,12 +894,12 @@ namespace Docunet
         
         #region Equals
         
-        public bool Equals(Docunet document)
+        public bool Equals(Document document)
         {
             return CompareDocuments(document, this);
         }
         
-        private bool CompareDocuments(Docunet document1, Docunet document2)
+        private bool CompareDocuments(Document document1, Document document2)
         {
             var iterations = 0;
             
@@ -910,9 +910,9 @@ namespace Docunet
                     var areEqual = false;
                     var obj = document2.GetField(field.Key);
                     
-                    if ((field.Value is Docunet) && (obj is Docunet))
+                    if ((field.Value is Document) && (obj is Document))
                     {
-                        areEqual = CompareDocuments((Docunet)field.Value, (Docunet)obj);
+                        areEqual = CompareDocuments((Document)field.Value, (Document)obj);
                     }
                     else if ((field.Value is IList) && (obj is IList))
                     {
@@ -956,9 +956,9 @@ namespace Docunet
                 var item = collection1[i];
                 var areEqual = false;
                 
-                if ((item is Docunet) && (collection2[i] is Docunet))
+                if ((item is Document) && (collection2[i] is Document))
                 {
-                    areEqual = CompareDocuments((Docunet)item, (Docunet)collection2[i]);
+                    areEqual = CompareDocuments((Document)item, (Document)collection2[i]);
                 }
                 else
                 {
@@ -1006,16 +1006,16 @@ namespace Docunet
             return genericObject;
         }
         
-        private T ToObject<T>(T genericObject, Docunet document) where T : class, new()
+        private T ToObject<T>(T genericObject, Document document) where T : class, new()
         {
             var genericObjectType = genericObject.GetType();
 
-            if (genericObject is Docunet)
+            if (genericObject is Document)
             {
                 // if generic object is arango specific class - use set field to copy data
                 foreach (KeyValuePair<string, object> item in document)
                 {
-                    (genericObject as Docunet).SetField(item.Key, item.Value);
+                    (genericObject as Document).SetField(item.Key, item.Value);
                 }
             }
             else
@@ -1057,9 +1057,9 @@ namespace Docunet
                         // create object instance of embedded class
                         var instance = Activator.CreateInstance(propertyInfo.PropertyType);
 
-                        if (fieldType == typeof(Docunet))
+                        if (fieldType == typeof(Document))
                         {
-                            propertyInfo.SetValue(genericObject, ToObject(instance, (Docunet)fieldValue), null);
+                            propertyInfo.SetValue(genericObject, ToObject(instance, (Document)fieldValue), null);
                         }
                         else
                         {
@@ -1124,9 +1124,9 @@ namespace Docunet
                             // create instance object based on first element of generic collection
                             var instance = Activator.CreateInstance(collectionType.GetGenericArguments().First(), null);
                             
-                            if (elementType == typeof(Docunet))
+                            if (elementType == typeof(Document))
                             {
-                                ((IList)collectionObject).Add(ToObject(instance, (Docunet)collection[i]));
+                                ((IList)collectionObject).Add(ToObject(instance, (Document)collection[i]));
                             }
                             else
                             {
@@ -1155,15 +1155,15 @@ namespace Docunet
         
         #endregion
         
-        public static Docunet ToDocument<T>(T inputObject)
+        public static Document ToDocument<T>(T inputObject)
         {
-            if (inputObject is Docunet)
+            if (inputObject is Document)
             {
-                return inputObject as Docunet;
+                return inputObject as Document;
             }
             else if (inputObject is Dictionary<string, object>)
             {
-                var document = new Docunet();
+                var document = new Document();
                 
                 foreach (KeyValuePair<string, object> field in inputObject as Dictionary<string, object>)
                 {
@@ -1175,7 +1175,7 @@ namespace Docunet
             else
             {
                 var inputObjectType = inputObject.GetType();
-                var document = new Docunet();
+                var document = new Document();
                 
                 foreach (var propertyInfo in inputObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
                 {
@@ -1345,9 +1345,9 @@ namespace Docunet
         /// <summary>
         /// Deserializes specified json string to document object.
         /// </summary>
-        public static Docunet DeserializeDocument(string json)
+        public static Document DeserializeDocument(string json)
         {
-            var document = new Docunet();
+            var document = new Document();
             var fields = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(json);
             
             foreach (KeyValuePair<string, JToken> field in fields)
@@ -1371,7 +1371,7 @@ namespace Docunet
 
         private static object DeserializeEmbeddedObject(JObject jObject)
         {
-            var embedded = new Docunet();
+            var embedded = new Document();
 
             foreach (KeyValuePair<string, JToken> field in jObject)
             {

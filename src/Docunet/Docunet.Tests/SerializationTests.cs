@@ -14,7 +14,7 @@ namespace Docunet.Tests
         public void Should_serialize_null()
         {
             // fill document with data
-            var document = new Docunet()
+            var document = new Document()
                 .Object("null", null)
                 .Object("embedded.null", null);
 
@@ -33,7 +33,7 @@ namespace Docunet.Tests
         public void Should_serialize_boolean()
         {
             // fill document with data
-            var document = new Docunet()
+            var document = new Document()
                 .Bool("isTrue", true)
                 .Bool("isFalse", false)
                 .Bool("embedded.isTrue", true)
@@ -58,7 +58,7 @@ namespace Docunet.Tests
         public void Should_serialize_numbers()
         {
             // fill document with data
-            var document = new Docunet()
+            var document = new Document()
                 .Int("integer", int.Parse("123"))
                 .Float("float", float.Parse("3.14", CultureInfo.InvariantCulture))
                 .Int("embedded.integer", int.Parse("123"))
@@ -85,7 +85,7 @@ namespace Docunet.Tests
         public void Should_serialize_strings()
         {
             // fill document with data
-            var document = new Docunet()
+            var document = new Document()
                 .String("string", "foo bar")
                 .String("embedded.string", "foo bar")
                 .List("embedded.array", new List<string> { "foo", "bar" })
@@ -111,7 +111,7 @@ namespace Docunet.Tests
             var dateTimeUnix = DateTime.Parse("2008-12-20T02:12:02Z").ToUniversalTime();
             
             // fill document with data
-            var document = new Docunet()
+            var document = new Document()
                 .DateTime("datetime1", dateTimeIso, DateTimeFormat.Iso8601String)
                 .DateTime("datetime2", dateTimeUnix, DateTimeFormat.UnixTimeStamp);
 

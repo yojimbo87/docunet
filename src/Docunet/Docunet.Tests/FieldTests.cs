@@ -12,7 +12,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_bool_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Bool("foo", true)
                 .Bool("bar.baz", false);
 
@@ -23,7 +23,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_byte_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Byte("foo", 123)
                 .Byte("bar.baz", 200);
             
@@ -34,7 +34,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_short_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Short("foo", 1234)
                 .Short("bar.baz", 4321);
             
@@ -45,7 +45,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_int_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Int("foo", 123456)
                 .Int("bar.baz", 654321);
             
@@ -56,7 +56,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_long_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Long("foo", 123456789012345)
                 .Long("bar.baz", 543210987654321);
             
@@ -67,7 +67,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_float_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Float("foo", 123.456f)
                 .Float("bar.baz", 654.321f);
             
@@ -78,7 +78,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_double_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Double("foo", 123.456)
                 .Double("bar.baz", 654.321);
             
@@ -89,7 +89,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_decimal_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Decimal("foo", new Decimal(123.456))
                 .Decimal("bar.baz", new Decimal(654.321));
             
@@ -100,7 +100,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_string_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .String("foo", "test string value")
                 .String("bar.baz", "test value string");
             
@@ -114,7 +114,7 @@ namespace Docunet.Tests
             var dateNow = DateTime.Now;
             var dateUtcNow = DateTime.UtcNow;
             
-            var document = new Docunet()
+            var document = new Document()
                 .DateTime("foo", dateNow)
                 .DateTime("bar.baz", dateUtcNow)
                 .DateTime("baz1", dateUtcNow, DateTimeFormat.Iso8601String)
@@ -137,15 +137,15 @@ namespace Docunet.Tests
             var dateNow = DateTime.Now;
             var dateUtcNow = DateTime.UtcNow;
             
-            var document = new Docunet();
+            var document = new Document();
             
-            Docunet.Settings.DateTimeFormat = DateTimeFormat.Iso8601String;
+            Document.Settings.DateTimeFormat = DateTimeFormat.Iso8601String;
             document.DateTime("baz1", dateUtcNow);
             
-            Docunet.Settings.DateTimeFormat = DateTimeFormat.UnixTimeStamp;
+            Document.Settings.DateTimeFormat = DateTimeFormat.UnixTimeStamp;
             document.DateTime("baz2", dateUtcNow);
             
-            Docunet.Settings.DateTimeFormat = DateTimeFormat.DateTimeObject;
+            Document.Settings.DateTimeFormat = DateTimeFormat.DateTimeObject;
             document.DateTime("baz3", dateUtcNow);
             
             Assert.AreEqual(dateUtcNow.ToString(), document.DateTime("baz1").ToString());
@@ -162,7 +162,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_object_values()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Object("foo", null)
                 .Object("bar.baz", 123);
             
@@ -189,7 +189,7 @@ namespace Docunet.Tests
                 new Dummy() { Foo = "three", Bar = 3 }
             };
             
-            var document = new Docunet()
+            var document = new Document()
                 .Object("foo", dummy1)
                 .Object("bar.baz", dummy2);
             
@@ -200,14 +200,14 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_document()
         {
-            var doc = new Docunet()
+            var doc = new Document()
                 .String("foo", "test string value")
                 .String("bar.baz", "test value string");
             
-            var document = new Docunet()
-                .Document("doc", doc);
+            var document = new Document()
+                .Docunet("doc", doc);
             
-            Assert.AreEqual(doc, document.Document("doc"));
+            Assert.AreEqual(doc, document.Docunet("doc"));
         }
         
         [Test()]
@@ -217,18 +217,18 @@ namespace Docunet.Tests
             doc.Add("foo", "test string value");
             doc.Add("bar.baz", "test value string");
             
-            var document = new Docunet()
-                .Document("doc", doc);
+            var document = new Document()
+                .Docunet("doc", doc);
             
-            var parsedDoc = Docunet.ToDocument(doc);
+            var parsedDoc = Document.ToDocument(doc);
             
-            Assert.AreEqual(parsedDoc, document.Document("doc"));
+            Assert.AreEqual(parsedDoc, document.Docunet("doc"));
         }
         
         [Test()]
         public void Should_check_for_null_value()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .Object("foo1", null)
                 .List("foo2", new List<object> { 1, 2, null })
                 .String("foo3", "test string value")
@@ -264,21 +264,21 @@ namespace Docunet.Tests
                 new Dummy() { Foo = "three", Bar = 3 }
             };
             
-            var doc1 = Docunet.ToDocument(dummy1);
-            var doc2 = Docunet.ToDocument(dummy2);
+            var doc1 = Document.ToDocument(dummy1);
+            var doc2 = Document.ToDocument(dummy2);
             
-            var document = new Docunet()
-                .Document("foo", dummy1)
-                .Document("bar.baz", dummy2);
+            var document = new Document()
+                .Docunet("foo", dummy1)
+                .Docunet("bar.baz", dummy2);
             
-            Assert.AreEqual(doc1, document.Document("foo"));
-            Assert.AreEqual(doc2, document.Document("bar.baz"));
+            Assert.AreEqual(doc1, document.Docunet("foo"));
+            Assert.AreEqual(doc2, document.Docunet("bar.baz"));
             
             var stringList = document.List<string>("bar.baz.StringList");
-            var objectList = document.List<Docunet>("bar.baz.ObjectList");
+            var objectList = document.List<Document>("bar.baz.ObjectList");
             
             Assert.AreEqual(dummy2.StringList, stringList);
-            Assert.AreEqual(Docunet.ToList(dummy2.ObjectList), objectList);
+            Assert.AreEqual(Document.ToList(dummy2.ObjectList), objectList);
         }
         
         [Test()]
@@ -287,7 +287,7 @@ namespace Docunet.Tests
             var stringList = new List<string> { "one", "two", "three" };
             var intList = new List<int> { 1, 2, 3 };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List("foo", stringList)
                 .List("bar.baz", intList);
             
@@ -312,7 +312,7 @@ namespace Docunet.Tests
                 new Dummy() { Foo = "Dummy six", Bar = 6 }
             };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List("foo", dummies1)
                 .List("bar.baz", dummies2);
             
@@ -323,26 +323,26 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_docunet_list()
         {
-            var dummies1 = new List<Docunet> 
+            var dummies1 = new List<Document> 
             { 
-                new Docunet().String("foo", "Dummy one").Int("bar", 1),
-                new Docunet().String("foo", "Dummy two").Int("bar", 2),
-                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+                new Document().String("foo", "Dummy one").Int("bar", 1),
+                new Document().String("foo", "Dummy two").Int("bar", 2),
+                new Document().String("foo", "Dummy three").Int("bar", 3)
             };
             
-            var dummies2 = new List<Docunet> 
+            var dummies2 = new List<Document> 
             { 
-                new Docunet().String("foo", "Dummy four").Int("bar", 4),
-                new Docunet().String("foo", "Dummy five").Int("bar", 5),
-                new Docunet().String("foo", "Dummy six").Int("bar", 6)
+                new Document().String("foo", "Dummy four").Int("bar", 4),
+                new Document().String("foo", "Dummy five").Int("bar", 5),
+                new Document().String("foo", "Dummy six").Int("bar", 6)
             };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List("foo", dummies1)
                 .List("bar.baz", dummies2);
             
-            Assert.AreEqual(dummies1, document.List<Docunet>("foo"));
-            Assert.AreEqual(dummies2, document.List<Docunet>("bar.baz"));
+            Assert.AreEqual(dummies1, document.List<Document>("foo"));
+            Assert.AreEqual(dummies2, document.List<Document>("bar.baz"));
         }
         
         [Test()]
@@ -351,7 +351,7 @@ namespace Docunet.Tests
             var list1 = new List<string> { "one", "two", "three" };
             var list2 = new List<string> { "four", "five", "six" };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List<string>("foo", list1)
                 .List<string>("bar.baz", list2);
             
@@ -381,7 +381,7 @@ namespace Docunet.Tests
                 new Dummy() { Foo = "Dummy six", Bar = 6 }
             };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List("foo", dummies1)
                 .List("bar.baz", dummies2);
             
@@ -405,25 +405,25 @@ namespace Docunet.Tests
         [Test()]
         public void Should_get_and_set_field_with_docunet_array_values()
         {
-            var dummies1 = new List<Docunet> 
+            var dummies1 = new List<Document> 
             { 
-                new Docunet().String("foo", "Dummy one").Int("bar", 1),
-                new Docunet().String("foo", "Dummy two").Int("bar", 2),
-                new Docunet().String("foo", "Dummy three").Int("bar", 3)
+                new Document().String("foo", "Dummy one").Int("bar", 1),
+                new Document().String("foo", "Dummy two").Int("bar", 2),
+                new Document().String("foo", "Dummy three").Int("bar", 3)
             };
             
-            var dummies2 = new List<Docunet> 
+            var dummies2 = new List<Document> 
             { 
-                new Docunet().String("foo", "Dummy four").Int("bar", 4),
-                new Docunet().String("foo", "Dummy five").Int("bar", 5),
-                new Docunet().String("foo", "Dummy six").Int("bar", 6)
+                new Document().String("foo", "Dummy four").Int("bar", 4),
+                new Document().String("foo", "Dummy five").Int("bar", 5),
+                new Document().String("foo", "Dummy six").Int("bar", 6)
             };
             
-            var document = new Docunet()
+            var document = new Document()
                 .List("foo", dummies1)
                 .List("bar.baz", dummies2);
             
-            Assert.AreEqual(dummies1, document.List<Docunet>("foo"));
+            Assert.AreEqual(dummies1, document.List<Document>("foo"));
             Assert.AreEqual(dummies1[0].String("foo"), document.String("foo[0].foo"));
             Assert.AreEqual(dummies1[0].Int("bar"), document.Int("foo[0].bar"));
             Assert.AreEqual(dummies1[1].String("foo"), document.String("foo[1].foo"));
@@ -431,7 +431,7 @@ namespace Docunet.Tests
             Assert.AreEqual(dummies1[2].String("foo"), document.String("foo[2].foo"));
             Assert.AreEqual(dummies1[2].Int("bar"), document.Int("foo[2].bar"));
             
-            Assert.AreEqual(dummies2, document.List<Docunet>("bar.baz"));
+            Assert.AreEqual(dummies2, document.List<Document>("bar.baz"));
             Assert.AreEqual(dummies2[0].String("foo"), document.String("bar.baz[0].foo"));
             Assert.AreEqual(dummies2[0].Int("bar"), document.Int("bar.baz[0].bar"));
             Assert.AreEqual(dummies2[1].String("foo"), document.String("bar.baz[1].foo"));
@@ -443,7 +443,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_check_presence_of_document_fields()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .String("foo1", "test string value")
                 .List("foo2", new List<string> { "one", "two", "three" })
                 .String("bar.baz1", "test value string")
@@ -467,7 +467,7 @@ namespace Docunet.Tests
         [Test()]
         public void Should_drop_fields()
         {
-            var document = new Docunet()
+            var document = new Document()
                 .String("foo1", "test string value 1")
                 .String("foo2", "test string value 2")
                 .String("bar.baz1", "test value string 1")
@@ -490,7 +490,7 @@ namespace Docunet.Tests
             var stringList = new List<string>();           
             var objectList = new List<Dummy>();
             
-            var document = new Docunet()
+            var document = new Document()
                 .Bool("bool", true)
                 .Byte("byte", 123)
                 .Short("short", 12345)

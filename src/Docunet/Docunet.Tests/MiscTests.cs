@@ -174,12 +174,14 @@ namespace Docunet.Tests
         public void Should_merge_two_documents_with_static_method()
         {
             var document1 = new Document()
+                .String("single", "one")
                 .String("foo1", "test string value one")
                 .Int("bar.baz1", 12345)
                 .List("intList", new List<int> { 1, 2, 3 })
                 .List("nest.stringList", new List<string> { "a", "b", "c" });
             
             var document2 = new Document()
+                .String("single", "two")
                 .String("foo2", "test string value two")
                 .Int("bar.baz2", 54321)
                 .List("intList", new List<int> { 3, 4, 5 })
@@ -188,12 +190,14 @@ namespace Docunet.Tests
             var mergedDocument = Document.Merge(document1, document2);
             
             // check if document1 and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("single"));
             Assert.AreEqual(true, document1.Has("foo1"));
             Assert.AreEqual(true, document1.Has("bar.baz1"));
             Assert.AreEqual(true, document1.Has("intList"));
             Assert.AreEqual(true, document1.Has("nest.stringList"));
             Assert.AreEqual(false, document1.Has("foo2"));
             Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("single"));
             Assert.AreEqual(false, document2.Has("foo1"));
             Assert.AreEqual(false, document2.Has("bar.baz1"));
             Assert.AreEqual(true, document2.Has("foo2"));
@@ -202,6 +206,7 @@ namespace Docunet.Tests
             Assert.AreEqual(true, document2.Has("nest.stringList"));
             
             // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual(document1.String("single"), mergedDocument.String("single"));
             Assert.AreEqual(document1.String("foo1"), mergedDocument.String("foo1"));
             Assert.AreEqual(document2.String("foo2"), mergedDocument.String("foo2"));
             Assert.AreEqual(document1.Int("bar.baz1"), mergedDocument.Int("bar.baz1"));

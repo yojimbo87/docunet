@@ -912,10 +912,22 @@ namespace Docunet
                     var field1Value = clonedDocument1[field.Key];
                     var field2Value = field.Value;
                     
-                    if ((field1Value is Document) && (field2Value is Document) && (mergeOptions == MergeOptions.MergeFields))
+                    if ((field1Value is Document) && (field2Value is Document))
                     {
-                        clonedDocument1.Remove(field.Key);
-                        clonedDocument1.Add(field.Key, Merge((Document)field1Value, (Document)field2Value, mergeOptions));
+                        if (mergeOptions == MergeOptions.MergeFields)
+                        {
+                            clonedDocument1.Remove(field.Key);
+                            clonedDocument1.Add(field.Key, Merge((Document)field1Value, (Document)field2Value, mergeOptions));
+                        }
+                        else if (mergeOptions == MergeOptions.ReplaceFields)
+                        {
+                            clonedDocument1.Remove(field.Key);
+                            clonedDocument1.Add(field.Key, (Document)field2Value);
+                        }
+                        else if (mergeOptions == MergeOptions.KeepFields)
+                        {
+                            // do nothing - keep it as it is
+                        }
                     }
                     else if ((field1Value is IList) && (field2Value is IList) && (mergeOptions == MergeOptions.MergeFields))
                     {
@@ -936,6 +948,10 @@ namespace Docunet
                     {
                         clonedDocument1.Remove(field.Key);
                         clonedDocument1.Add(field.Key, field2Value);
+                    }
+                    else if (mergeOptions == MergeOptions.KeepFields)
+                    {
+                        // do nothing - keep it as it is
                     }
                 }
                 else

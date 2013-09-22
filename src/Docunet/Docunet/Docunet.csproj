@@ -46,6 +46,7 @@
     <Compile Include="DateTimeFormat.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="DocumentSettings.cs" />
+    <Compile Include="MergeOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

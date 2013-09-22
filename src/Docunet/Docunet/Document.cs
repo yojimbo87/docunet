@@ -506,6 +506,8 @@ namespace Docunet
         
         #endregion
         
+        #region Field checkers
+        
         public bool Has(string fieldPath)
         {
             var currentField = "";
@@ -784,6 +786,8 @@ namespace Docunet
             return null;
         }
         
+        #endregion
+        
         public Document Drop(string fieldPath)
         {
             var currentField = "";
@@ -878,6 +882,69 @@ namespace Docunet
             }
             
             return clonedDocument;
+        }
+        
+        #endregion
+        
+        #region Merge
+        
+        public void Merge(Document document, MergeOptions mergeOptions = MergeOptions.MergeFields)
+        {
+            var mergedDocument = Merge(this, document, mergeOptions);
+            
+            this.Clear();
+            
+            foreach (KeyValuePair<string, object> field in mergedDocument)
+            {
+                this.Add(field.Key, field.Value);
+            }
+        }
+        
+        public static Document Merge(Document document1, Document document2, MergeOptions mergeOptions = MergeOptions.MergeFields)
+        {
+            // clone first document to prevent its poisoning/injection of fields from second document
+            var clonedDocument1 = document1.Clone();
+            
+            foreach (KeyValuePair<string, object> field in document2)
+            {
+                if (clonedDocument1.ContainsKey(field.Key))
+                {
+                    var field1Value = clonedDocument1[field.Key];
+                    var field2Value = field.Value;
+                    
+                    if ((field1Value is Document) && (field2Value is Document) && (mergeOptions == MergeOptions.MergeFields))
+                    {
+                        clonedDocument1.Remove(field.Key);
+                        clonedDocument1.Add(field.Key, Merge((Document)field1Value, (Document)field2Value, mergeOptions));
+                    }
+                    else if ((field1Value is IList) && (field2Value is IList) && (mergeOptions == MergeOptions.MergeFields))
+                    {
+                        var collection1 = (IList)field1Value;
+                        var collection2 = (IList)field2Value;
+                        
+                        for (var i = 0; i < collection2.Count; i++)
+                        {
+                            var item = collection2[i];
+                            
+                            if (!collection1.Contains(item))
+                            {
+                                collection1.Add(item);
+                            }
+                        }
+                    }
+                    else if (mergeOptions == MergeOptions.ReplaceFields)
+                    {
+                        clonedDocument1.Remove(field.Key);
+                        clonedDocument1.Add(field.Key, field2Value);
+                    }
+                }
+                else
+                {
+                    clonedDocument1.Add(field.Key, field.Value);
+                }
+            }
+            
+            return clonedDocument1;
         }
         
         #endregion

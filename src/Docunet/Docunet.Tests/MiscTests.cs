@@ -169,5 +169,244 @@ namespace Docunet.Tests
             Assert.AreEqual(sourceDocument.Int("bar.baz1"), document.Int("bar.baz1"));
             Assert.AreEqual(false, document.Has("bar.baz2"));
         }
+        
+        [Test()]
+        public void Should_merge_two_documents_with_static_method()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            var mergedDocument = Document.Merge(document1, document2);
+            
+            // check if document1 and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(true, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(false, document1.Has("foo2"));
+            Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual(document1.String("foo1"), mergedDocument.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), mergedDocument.String("foo2"));
+            Assert.AreEqual(document1.Int("bar.baz1"), mergedDocument.Int("bar.baz1"));
+            Assert.AreEqual(document2.Int("bar.baz2"), mergedDocument.Int("bar.baz2"));
+            Assert.AreEqual(new List<int> { 1, 2, 3, 4, 5 }, mergedDocument.List<int>("intList"));
+            Assert.AreEqual(new List<string> { "a", "b", "c", "d", "e" }, mergedDocument.List<string>("nest.stringList"));
+        }
+        
+        [Test()]
+        public void Should_merge_two_documents_by_replacing_existing_fields_with_second_document_with_static_method()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            var mergedDocument = Document.Merge(document1, document2, MergeOptions.ReplaceFields);
+            
+            // check if document1 and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(true, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(false, document1.Has("foo2"));
+            Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual(document1.String("foo1"), mergedDocument.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), mergedDocument.String("foo2"));
+            Assert.AreEqual(false, mergedDocument.Has("bar.baz1"));
+            Assert.AreEqual(document2.Int("bar.baz2"), mergedDocument.Int("bar.baz2"));
+            Assert.AreEqual(new List<int> { 3, 4, 5 }, mergedDocument.List<int>("intList"));
+            Assert.AreEqual(new List<string> { "c", "d", "e" }, mergedDocument.List<string>("nest.stringList"));
+        }
+        
+        [Test()]
+        public void Should_merge_two_documents_by_keeping_existing_fields_from_first_document_with_static_method()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            var mergedDocument = Document.Merge(document1, document2, MergeOptions.KeepFields);
+            
+            // check if document1 and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(true, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(false, document1.Has("foo2"));
+            Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual(document1.String("foo1"), mergedDocument.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), mergedDocument.String("foo2"));
+            Assert.AreEqual(document1.Int("bar.baz1"), mergedDocument.Int("bar.baz1"));
+            Assert.AreEqual(false, mergedDocument.Has("bar.baz2"));
+            Assert.AreEqual(new List<int> { 1, 2, 3 }, mergedDocument.List<int>("intList"));
+            Assert.AreEqual(new List<string> { "a", "b", "c" }, mergedDocument.List<string>("nest.stringList"));
+        }
+        
+        [Test()]
+        public void Should_merge_two_documents()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            document1.Merge(document2);
+            
+            // check if document1 changed and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(true, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(true, document1.Has("foo2"));
+            Assert.AreEqual(true, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual("test string value one", document1.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), document1.String("foo2"));
+            Assert.AreEqual(12345, document1.Int("bar.baz1"));
+            Assert.AreEqual(document2.Int("bar.baz2"), document1.Int("bar.baz2"));
+            Assert.AreEqual(new List<string> { "a", "b", "c", "d", "e" }, document1.List<string>("nest.stringList"));
+        }
+        
+        [Test()]
+        public void Should_merge_two_documents_by_replacing_existing_fields_with_second_document()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            document1.Merge(document2, MergeOptions.ReplaceFields);
+            
+            // check if document1 changed and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(false, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(true, document1.Has("foo2"));
+            Assert.AreEqual(true, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual("test string value one", document1.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), document1.String("foo2"));
+            Assert.AreEqual(false, document1.Has("bar.baz1"));
+            Assert.AreEqual(document2.Int("bar.baz2"), document1.Int("bar.baz2"));
+            Assert.AreEqual(new List<int> { 3, 4, 5 }, document1.List<int>("intList"));
+            Assert.AreEqual(new List<string> { "c", "d", "e" }, document1.List<string>("nest.stringList"));
+        }
+        
+        [Test()]
+        public void Should_merge_two_documents_by_keeping_existing_fields_from_first_document()
+        {
+            var document1 = new Document()
+                .String("foo1", "test string value one")
+                .Int("bar.baz1", 12345)
+                .List("intList", new List<int> { 1, 2, 3 })
+                .List("nest.stringList", new List<string> { "a", "b", "c" });
+            
+            var document2 = new Document()
+                .String("foo2", "test string value two")
+                .Int("bar.baz2", 54321)
+                .List("intList", new List<int> { 3, 4, 5 })
+                .List("nest.stringList", new List<string> { "c", "d", "e" });
+            
+            document1.Merge(document2, MergeOptions.KeepFields);
+            
+            // check if document1 changed and document2 consists only of original values
+            Assert.AreEqual(true, document1.Has("foo1"));
+            Assert.AreEqual(true, document1.Has("bar.baz1"));
+            Assert.AreEqual(true, document1.Has("intList"));
+            Assert.AreEqual(true, document1.Has("nest.stringList"));
+            Assert.AreEqual(true, document1.Has("foo2"));
+            Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("foo1"));
+            Assert.AreEqual(false, document2.Has("bar.baz1"));
+            Assert.AreEqual(true, document2.Has("foo2"));
+            Assert.AreEqual(true, document2.Has("bar.baz2"));
+            Assert.AreEqual(true, document2.Has("intList"));
+            Assert.AreEqual(true, document2.Has("nest.stringList"));
+            
+            // check if merged document consists of combination of document1 and document2
+            Assert.AreEqual("test string value one", document1.String("foo1"));
+            Assert.AreEqual(document2.String("foo2"), document1.String("foo2"));
+            Assert.AreEqual(12345, document1.Int("bar.baz1"));
+            Assert.AreEqual(false, document1.Has("bar.baz2"));
+            Assert.AreEqual(new List<int> { 1, 2, 3 }, document1.List<int>("intList"));
+            Assert.AreEqual(new List<string> { "a", "b", "c" }, document1.List<string>("nest.stringList"));
+        }
     }
 }

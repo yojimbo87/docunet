@@ -1113,6 +1113,11 @@ namespace Docunet
             return genericObject;
         }
         
+        public void ToObject<T>(T genericObject) where T : class, new()
+        {
+            genericObject = (T)ToObject<T>(genericObject, this);
+        }
+        
         private T ToObject<T>(T genericObject, Document document) where T : class, new()
         {
             var genericObjectType = genericObject.GetType();

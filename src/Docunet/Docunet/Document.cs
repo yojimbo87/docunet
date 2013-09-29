@@ -139,7 +139,6 @@ namespace Docunet
         
         public string String(string fieldPath)
         {
-            // TODO: convert to iso string if value if datetime
             return (string)GetField(fieldPath);
         }
         

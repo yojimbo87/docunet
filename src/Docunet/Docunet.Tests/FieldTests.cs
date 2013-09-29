@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using Docunet;
@@ -457,6 +458,62 @@ namespace Docunet.Tests
             Assert.AreEqual(dummies2[1].Int("bar"), document.Int("bar.baz[1].bar"));
             Assert.AreEqual(dummies2[2].String("foo"), document.String("bar.baz[2].foo"));
             Assert.AreEqual(dummies2[2].Int("bar"), document.Int("bar.baz[2].bar"));
+        }
+        
+        [Test()]
+        public void Should_convert_field_types()
+        {
+            var dateUtcNow = DateTime.UtcNow;
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var datetimeString = dateUtcNow.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
+            TimeSpan span = (dateUtcNow.ToUniversalTime() - unixEpoch);
+            var datetimeLong = (long)span.TotalSeconds;
+            
+            var document = new Document()
+                .Int("intLong", 12345)
+                .Int("intString", 12345)
+                .Long("longInt", 12345)
+                .DateTime("datetimeString", dateUtcNow)
+                .DateTime("datetimeLong", dateUtcNow)
+                .Int("nested.intLong", 12345)
+                .Int("nested.intString", 12345)
+                .Long("nested.longInt", 12345)
+                .DateTime("nested.datetimeString", dateUtcNow)
+                .DateTime("nested.datetimeLong", dateUtcNow);
+            
+            document
+                .Convert("intLong", typeof(long))
+                .Convert("intString", typeof(string))
+                .Convert("longInt", typeof(int))
+                .Convert("datetimeString", typeof(string))
+                .Convert("datetimeLong", typeof(long))
+                .Convert("nested.intLong", typeof(long))
+                .Convert("nested.intString", typeof(string))
+                .Convert("nested.longInt", typeof(int))
+                .Convert("nested.datetimeString", typeof(string))
+                .Convert("nested.datetimeLong", typeof(long));
+            
+            Assert.AreEqual(typeof(long), document.Type("intLong"));
+            Assert.AreEqual(typeof(string), document.Type("intString"));
+            Assert.AreEqual(typeof(int), document.Type("longInt"));
+            Assert.AreEqual(typeof(string), document.Type("datetimeString"));
+            Assert.AreEqual(typeof(long), document.Type("datetimeLong"));
+            Assert.AreEqual(typeof(long), document.Type("nested.intLong"));
+            Assert.AreEqual(typeof(string), document.Type("nested.intString"));
+            Assert.AreEqual(typeof(int), document.Type("nested.longInt"));
+            Assert.AreEqual(typeof(string), document.Type("nested.datetimeString"));
+            Assert.AreEqual(typeof(long), document.Type("nested.datetimeLong"));
+            
+            Assert.AreEqual(12345L, document.Long("intLong"));
+            Assert.AreEqual("12345", document.String("intString"));
+            Assert.AreEqual(12345, document.Int("longInt"));
+            Assert.AreEqual(datetimeString, document.String("datetimeString"));
+            Assert.AreEqual(datetimeLong, document.Long("datetimeLong"));
+            Assert.AreEqual(12345L, document.Long("nested.intLong"));
+            Assert.AreEqual("12345", document.String("nested.intString"));
+            Assert.AreEqual(12345, document.Int("nested.longInt"));
+            Assert.AreEqual(datetimeString, document.String("nested.datetimeString"));
+            Assert.AreEqual(datetimeLong, document.Long("nested.datetimeLong"));
         }
         
         [Test()]

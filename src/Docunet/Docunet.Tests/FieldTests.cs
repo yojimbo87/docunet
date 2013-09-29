@@ -475,11 +475,15 @@ namespace Docunet.Tests
                 .Long("longInt", 12345)
                 .DateTime("datetimeString", dateUtcNow)
                 .DateTime("datetimeLong", dateUtcNow)
+                .String("stringDatetime", datetimeString)
+                .Long("longDatetime", datetimeLong)
                 .Int("nested.intLong", 12345)
                 .Int("nested.intString", 12345)
                 .Long("nested.longInt", 12345)
                 .DateTime("nested.datetimeString", dateUtcNow)
-                .DateTime("nested.datetimeLong", dateUtcNow);
+                .DateTime("nested.datetimeLong", dateUtcNow)
+                .String("nested.stringDatetime", datetimeString)
+                .Long("nested.longDatetime", datetimeLong);
             
             document
                 .Convert("intLong", typeof(long))
@@ -487,33 +491,45 @@ namespace Docunet.Tests
                 .Convert("longInt", typeof(int))
                 .Convert("datetimeString", typeof(string))
                 .Convert("datetimeLong", typeof(long))
+                .Convert("stringDatetime", typeof(DateTime))
+                .Convert("longDatetime", typeof(DateTime))
                 .Convert("nested.intLong", typeof(long))
                 .Convert("nested.intString", typeof(string))
                 .Convert("nested.longInt", typeof(int))
                 .Convert("nested.datetimeString", typeof(string))
-                .Convert("nested.datetimeLong", typeof(long));
+                .Convert("nested.datetimeLong", typeof(long))
+                .Convert("nested.stringDatetime", typeof(DateTime))
+                .Convert("nested.longDatetime", typeof(DateTime));
             
             Assert.AreEqual(typeof(long), document.Type("intLong"));
             Assert.AreEqual(typeof(string), document.Type("intString"));
             Assert.AreEqual(typeof(int), document.Type("longInt"));
             Assert.AreEqual(typeof(string), document.Type("datetimeString"));
             Assert.AreEqual(typeof(long), document.Type("datetimeLong"));
+            Assert.AreEqual(typeof(DateTime), document.Type("stringDatetime"));
+            Assert.AreEqual(typeof(DateTime), document.Type("longDatetime"));
             Assert.AreEqual(typeof(long), document.Type("nested.intLong"));
             Assert.AreEqual(typeof(string), document.Type("nested.intString"));
             Assert.AreEqual(typeof(int), document.Type("nested.longInt"));
             Assert.AreEqual(typeof(string), document.Type("nested.datetimeString"));
             Assert.AreEqual(typeof(long), document.Type("nested.datetimeLong"));
+            Assert.AreEqual(typeof(DateTime), document.Type("nested.stringDatetime"));
+            Assert.AreEqual(typeof(DateTime), document.Type("nested.longDatetime"));
             
             Assert.AreEqual(12345L, document.Long("intLong"));
             Assert.AreEqual("12345", document.String("intString"));
             Assert.AreEqual(12345, document.Int("longInt"));
             Assert.AreEqual(datetimeString, document.String("datetimeString"));
             Assert.AreEqual(datetimeLong, document.Long("datetimeLong"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), document.DateTime("stringDatetime").ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), document.DateTime("longDatetime").ToString("yyyy-MM-dd HH:mm:ss"));
             Assert.AreEqual(12345L, document.Long("nested.intLong"));
             Assert.AreEqual("12345", document.String("nested.intString"));
             Assert.AreEqual(12345, document.Int("nested.longInt"));
             Assert.AreEqual(datetimeString, document.String("nested.datetimeString"));
             Assert.AreEqual(datetimeLong, document.Long("nested.datetimeLong"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"), document.DateTime("nested.stringDatetime").ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), document.DateTime("nested.longDatetime").ToString("yyyy-MM-dd HH:mm:ss"));
         }
         
         [Test()]

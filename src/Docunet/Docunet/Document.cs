@@ -9,12 +9,25 @@ using Newtonsoft.Json.Linq;
 
 namespace Docunet
 {
+    /// <summary> 
+    /// Document JSON-like structure represented as dictionary of strings and objects.
+    /// </summary>
     public class Document : Dictionary<string, object>
     {
+        /// <summary> 
+        /// Global settings object for documents.
+        /// </summary>
         public static DocumentSettings Settings = new DocumentSettings();
         
+        /// <summary> 
+        /// Creates new document.
+        /// </summary>
         public Document() {  }
         
+        /// <summary> 
+        /// Creates new document by deserializing json string.
+        /// </summary>
+        /// <param name="json">JSON string to be deserialized to document object instance.</param>
         public Document(string json)
         {
             foreach(KeyValuePair<string, object> field in DeserializeDocument(json))
@@ -25,6 +38,10 @@ namespace Docunet
         
         #region Field getters
         
+        /// <summary> 
+        /// Gets boolean type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public bool Bool(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -39,6 +56,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets byte type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public byte Byte(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -53,6 +74,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets short (Int16) type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public short Short(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -67,6 +92,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets integer (Int32) type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public int Int(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -81,6 +110,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets long (Int64) type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public long Long(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -95,6 +128,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets float type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public float Float(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -109,6 +146,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets double type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public double Double(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -123,6 +164,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets decimal type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public decimal Decimal(string fieldPath)
         {
             var fieldValue = GetField(fieldPath);
@@ -137,11 +182,19 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets string type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public string String(string fieldPath)
         {
             return (string)GetField(fieldPath);
         }
         
+        /// <summary> 
+        /// Gets DateTime object value of specific field. If value is in string DateTime or unix timestamp format it's converted to DateTime object.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public DateTime DateTime(string fieldPath)
         {
             var value = GetField(fieldPath);
@@ -160,21 +213,37 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Gets object type value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public object Object(string fieldPath)
         {
             return (object)GetField(fieldPath);
         }
         
+        /// <summary> 
+        /// Gets generic object value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public T Object<T>(string fieldPath)
         {
             return (T)GetField(fieldPath);
         }
         
+        /// <summary> 
+        /// Gets document object value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public Document Docunet(string fieldPath)
         {
             return (Document)GetField(fieldPath);
         }
         
+        /// <summary> 
+        /// Gets enum value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public T Enum<T>(string fieldPath)
         {
             var type = typeof(T);
@@ -182,6 +251,10 @@ namespace Docunet
             return (T)System.Enum.ToObject(type, GetField(fieldPath));
         }
         
+        /// <summary> 
+        /// Gets generic list object value of specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public List<T> List<T>(string fieldPath)
         {
             var collection = new List<T>();
@@ -321,6 +394,11 @@ namespace Docunet
         
         #region Field setters
         
+        /// <summary> 
+        /// Sets boolean type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Bool(string fieldPath, bool value)
         {
             SetField(fieldPath, value);
@@ -328,6 +406,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets byte type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Byte(string fieldPath, byte value)
         {
             SetField(fieldPath, value);
@@ -335,6 +418,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets short (Int16) type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Short(string fieldPath, short value)
         {
             SetField(fieldPath, value);
@@ -342,6 +430,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets integer (Int32) type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Int(string fieldPath, int value)
         {
             SetField(fieldPath, value);
@@ -349,6 +442,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets long (Int64) type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Long(string fieldPath, long value)
         {
             SetField(fieldPath, value);
@@ -356,6 +454,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets float type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Float(string fieldPath, float value)
         {
             SetField(fieldPath, value);
@@ -363,6 +466,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets double type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Double(string fieldPath, double value)
         {
             SetField(fieldPath, value);
@@ -370,6 +478,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets decimal type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document Decimal(string fieldPath, decimal value)
         {
             SetField(fieldPath, value);
@@ -377,6 +490,11 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets string type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document String(string fieldPath, string value)
         {
             SetField(fieldPath, value);
@@ -384,11 +502,22 @@ namespace Docunet
             return this;
         }
         
+        /// <summary> 
+        /// Sets DateTime object value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
         public Document DateTime(string fieldPath, DateTime value)
         {
             return DateTime(fieldPath, value, Settings.DateTimeFormat);
         }
         
+        /// <summary> 
+        /// Sets DateTime object value to specific field with given format.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        /// <param name="format">Format in which will be DateTime object stored.</param>
         public Document DateTime(string fieldPath, DateTime value, DateTimeFormat format)
         {
             switch (format)
@@ -408,46 +537,70 @@ namespace Docunet
 
             return this;
         }
-        
-        // used for null inputObject
-        public Document Object(string fieldPath, object inputObject)
+
+        /// <summary> 
+        /// Sets object type value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        public Document Object(string fieldPath, object value)
         {
-            SetField(fieldPath, inputObject);
+            SetField(fieldPath, value);
 
             return this;
         }
         
-        public Document Object<T>(string fieldPath, T inputObject)
+        /// <summary> 
+        /// Sets generic object value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        public Document Object<T>(string fieldPath, T value)
         {
-            SetField(fieldPath, inputObject);
+            SetField(fieldPath, value);
             
             return this;
         }
         
-        public Document Docunet<T>(string fieldPath, T inputObject)
+        /// <summary> 
+        /// Sets document object value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        public Document Docunet<T>(string fieldPath, T value)
         {
-            if (inputObject is Document)
+            if (value is Document)
             {
-                SetField(fieldPath, inputObject);
+                SetField(fieldPath, value);
             }
             else
             {
-                SetField(fieldPath, ToDocument<T>(inputObject));
+                SetField(fieldPath, ToDocument<T>(value));
             }
             
             return this;
         }
         
-        public Document Enum<T>(string fieldPath, T inputObject)
+        /// <summary> 
+        /// Sets enum value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        public Document Enum<T>(string fieldPath, T value)
         {
-            SetField(fieldPath, inputObject);
+            SetField(fieldPath, value);
             
             return this;
         }
-        
-        public Document List<T>(string fieldPath, List<T> inputCollection)
+
+        /// <summary> 
+        /// Sets generic list object value to specific field.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="value">Value to be saved in specified field.</param>
+        public Document List<T>(string fieldPath, List<T> value)
         {
-            SetField(fieldPath, inputCollection);
+            SetField(fieldPath, value);
 
             return this;
         }
@@ -508,6 +661,10 @@ namespace Docunet
         
         #region Field checkers
         
+        /// <summary> 
+        /// Checks for existence of specific field in document. True is returned also if field has null value.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public bool Has(string fieldPath)
         {
             var currentField = "";
@@ -604,6 +761,10 @@ namespace Docunet
             return false;
         }
         
+        /// <summary> 
+        /// Checks if value of specific field in document is null. If field doesn't exist false is returned.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public bool IsNull(string fieldPath)
         {
             var currentField = "";
@@ -716,6 +877,10 @@ namespace Docunet
             return false;
         }
         
+        /// <summary> 
+        /// Gets type of specific field in document.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public Type Type(string fieldPath)
         {
             var currentField = "";
@@ -790,6 +955,11 @@ namespace Docunet
         
         #region Field type conversion
         
+        /// <summary> 
+        /// Converts specific field value to given type.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
+        /// <param name="type">Type to which will be field value converted.</param>
         public Document Convert(string fieldPath, Type type)
         {
             var currentField = "";
@@ -891,6 +1061,10 @@ namespace Docunet
         
         #endregion
         
+        /// <summary> 
+        /// Removes specified field from document.
+        /// </summary>
+        /// <param name="fieldPath">Path to the field in document.</param>
         public Document Drop(string fieldPath)
         {
             var currentField = "";
@@ -963,6 +1137,9 @@ namespace Docunet
         
         #region Clone
         
+        /// <summary> 
+        /// Clones current document and returns it's deep copy.
+        /// </summary>
         public Document Clone()
         {
             return Clone(this);
@@ -991,6 +1168,11 @@ namespace Docunet
         
         #region Merge
         
+        /// <summary> 
+        /// Merges current document with specified document object based on given merge options.
+        /// </summary>
+        /// <param name="document">Document object which will be merged.</param>
+        /// <param name="mergeOptions">Options determining how two documents will be merged.</param>
         public void Merge(Document document, MergeOptions mergeOptions = MergeOptions.MergeFields)
         {
             var mergedDocument = Merge(this, document, mergeOptions);
@@ -1003,6 +1185,12 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Merges two documents based on given merge options.
+        /// </summary>
+        /// <param name="document1">First document to be merged.</param>
+        /// <param name="document2">Second document to be merged.</param>
+        /// <param name="mergeOptions">Options determining how two documents will be merged.</param>
         public static Document Merge(Document document1, Document document2, MergeOptions mergeOptions = MergeOptions.MergeFields)
         {
             // clone first document to prevent its poisoning/injection of fields from second document
@@ -1068,6 +1256,10 @@ namespace Docunet
         
         #endregion
         
+        /// <summary> 
+        /// Replaces current document with specified document object.
+        /// </summary>
+        /// <param name="document">Document object which will replace current document.</param>
         public void Replace(Document document)
         {
             this.Clear();
@@ -1078,6 +1270,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Clones current document and returns new document except specified fields.
+        /// </summary>
+        /// <param name="fields">Fields which won't be present in new document.</param>
         public Document Except(params string[] fields)
         {
             var document = Clone();
@@ -1090,6 +1286,10 @@ namespace Docunet
             return document;
         }
         
+        /// <summary> 
+        /// Clones current document and returns new document only with specified fields.
+        /// </summary>
+        /// <param name="fields">Fields which will be present in new document.</param>
         public Document Only(params string[] fields)
         {
             var document = new Document();
@@ -1104,6 +1304,10 @@ namespace Docunet
         
         #region Equals
         
+        /// <summary> 
+        /// Compares current document with specified document to determine their equality.
+        /// </summary>
+        /// <param name="document">Document which will be compared for equality.</param>
         public bool Equals(Document document)
         {
             return CompareDocuments(document, this);
@@ -1205,7 +1409,7 @@ namespace Docunet
         #region Convert to generic object
         
         /// <summary>
-        /// Converts and copies document fields to specified generic object.
+        /// Converts current document to generic object of specified type.
         /// </summary>
         public T ToObject<T>() where T : class, new()
         {
@@ -1216,6 +1420,10 @@ namespace Docunet
             return genericObject;
         }
         
+        /// <summary>
+        /// Converts current document to specified generic object.
+        /// </summary>
+        /// <param name="genericObject">Generic object to which will be current document converted.</param>
         public void ToObject<T>(T genericObject) where T : class, new()
         {
             genericObject = (T)ToObject<T>(genericObject, this);
@@ -1370,6 +1578,10 @@ namespace Docunet
         
         #endregion
         
+        /// <summary> 
+        /// Converts generic object to it's document representation.
+        /// </summary>
+        /// <param name="inputObject">Generic object to be converted into document.</param>
         public static Document ToDocument<T>(T inputObject)
         {
             if (inputObject is Document)
@@ -1421,6 +1633,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Converts generic collection to list of objects which are suitable for storing in document field.
+        /// </summary>
+        /// <param name="inputCollection">Generic collection to be converted into list of objects.</param>
         public static List<object> ToList<T>(T inputCollection)
         {
             var collectionType = inputCollection.GetType();
@@ -1479,23 +1695,31 @@ namespace Docunet
         
         #region Serialization
         
+        /// <summary> 
+        /// Serializes current document to it's JSON string representation.
+        /// </summary>
         public string Serialize()
         {
             return Serialize(this);
         }
         
-        /// <summary>
-        /// Serializes specified object to JSON string.
+        /// <summary> 
+        /// Serializes specified generic object to it's JSON string representation.
         /// </summary>
-        public static string Serialize<T>(T obj)
+        /// <param name="value">Generic object to be serialized into JSON string.</param>
+        public static string Serialize<T>(T value)
         {
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(value);
         }
         
         #endregion
         
         #region Deserialization
 
+        /// <summary> 
+        /// Deserializes specified JSON string into current document.
+        /// </summary>
+        /// <param name="json">JSON string to be deserialized.</param>
         public void Parse(string json)
         {
             foreach(KeyValuePair<string, object> field in DeserializeDocument(json))
@@ -1504,6 +1728,10 @@ namespace Docunet
             }
         }
         
+        /// <summary> 
+        /// Deserializes specified JSON string into list of generic objects.
+        /// </summary>
+        /// <param name="json">JSON string to be deserialized.</param>
         public static List<T> DeserializeArray<T>(string json)
         {
             var collection = new List<T>();
@@ -1557,9 +1785,10 @@ namespace Docunet
             return collection;
         }
         
-        /// <summary>
-        /// Deserializes specified json string to document object.
+        /// <summary> 
+        /// Deserializes specified JSON string into document object.
         /// </summary>
+        /// <param name="json">JSON string to be deserialized.</param>
         public static Document DeserializeDocument(string json)
         {
             var document = new Document();

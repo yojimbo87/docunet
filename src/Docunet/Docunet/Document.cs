@@ -762,7 +762,7 @@ namespace Docunet
         }
         
         /// <summary> 
-        /// Checks if value of specific field in document is null. If field doesn't exist false is returned.
+        /// Checks if value of specific field in document is null. If field doesn't exist true is returned.
         /// </summary>
         /// <param name="fieldPath">Path to the field in document.</param>
         public bool IsNull(string fieldPath)
@@ -807,6 +807,10 @@ namespace Docunet
                                         return true;
                                     }
                                 }
+                                else
+                                {
+                                    return true;
+                                }
                             }
                             // it's single value
                             else
@@ -816,6 +820,10 @@ namespace Docunet
                                     return true;
                                 }
                             }
+                        }
+                        else
+                        {
+                            return true;
                         }
                         
                         break;
@@ -828,7 +836,7 @@ namespace Docunet
                     else
                     {
                         // if current field in path isn't present
-                        break;
+                        return true;
                     }
 
                     iteration++;
@@ -862,6 +870,10 @@ namespace Docunet
                                 return true;
                             }
                         }
+                        else
+                        {
+                            return true;
+                        }
                     }
                     // it's single value
                     else
@@ -871,6 +883,10 @@ namespace Docunet
                             return true;
                         }
                     }
+                }
+                else
+                {
+                    return true;
                 }
             }
             

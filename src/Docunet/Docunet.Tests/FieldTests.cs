@@ -240,10 +240,15 @@ namespace Docunet.Tests
             Assert.AreEqual(true, document.IsNull("foo1"));
             Assert.AreEqual(false, document.IsNull("foo2[1]"));
             Assert.AreEqual(true, document.IsNull("foo2[2]"));
+            Assert.AreEqual(true, document.IsNull("foo2[3]"));
+            Assert.AreEqual(true, document.IsNull("nonExistingField"));
             Assert.AreEqual(true, document.IsNull("bar.baz1"));
             Assert.AreEqual(false, document.IsNull("bar.baz2[1]"));
             Assert.AreEqual(true, document.IsNull("bar.baz2[2]"));
+            Assert.AreEqual(true, document.IsNull("bar.baz2[3]"));
             Assert.AreEqual(false, document.IsNull("bar.baz3"));
+            Assert.AreEqual(true, document.IsNull("bar.nonExistingField"));
+            Assert.AreEqual(true, document.IsNull("bar.nonExistingField.nonExistingField"));
         }
         
         [Test()]

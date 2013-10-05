@@ -716,6 +716,11 @@ namespace Docunet
                     if (embeddedDocument.ContainsKey(currentField))
                     {
                         embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        
+                        if (embeddedDocument == null)
+                        {
+                            return false;
+                        }
                     }
                     else
                     {
@@ -832,6 +837,11 @@ namespace Docunet
                     if (embeddedDocument.ContainsKey(currentField))
                     {
                         embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        
+                        if (embeddedDocument == null)
+                        {
+                            return true;
+                        }
                     }
                     else
                     {

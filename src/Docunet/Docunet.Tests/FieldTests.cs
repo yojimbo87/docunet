@@ -232,7 +232,7 @@ namespace Docunet.Tests
             var document = new Document()
                 .Object("foo1", null)
                 .List("foo2", new List<object> { 1, 2, null })
-                .String("foo3", "test string value")
+                .Object("foo3.bar.baz", null)
                 .Object("bar.baz1", null)
                 .List("bar.baz2", new List<object> { 1, 2, null })
                 .String("bar.baz3", "test string value");
@@ -241,6 +241,8 @@ namespace Docunet.Tests
             Assert.AreEqual(false, document.IsNull("foo2[1]"));
             Assert.AreEqual(true, document.IsNull("foo2[2]"));
             Assert.AreEqual(true, document.IsNull("foo2[3]"));
+            Assert.AreEqual(true, document.IsNull("foo3.bar.baz"));
+            Assert.AreEqual(true, document.IsNull("foo3.bar.baz.nonExistingField"));
             Assert.AreEqual(true, document.IsNull("nonExistingField"));
             Assert.AreEqual(true, document.IsNull("bar.baz1"));
             Assert.AreEqual(false, document.IsNull("bar.baz2[1]"));
@@ -543,6 +545,7 @@ namespace Docunet.Tests
             var document = new Document()
                 .String("foo1", "test string value")
                 .List("foo2", new List<string> { "one", "two", "three" })
+                .Object("foo3.bar.baz", null)
                 .String("bar.baz1", "test value string")
                 .List("bar.baz2", new List<string> { "one", "two", "three" });
             
@@ -552,13 +555,19 @@ namespace Docunet.Tests
             Assert.AreEqual(true, document.Has("foo2[1]"));
             Assert.AreEqual(true, document.Has("foo2[2]"));
             Assert.AreEqual(false, document.Has("foo2[3]"));
+            Assert.AreEqual(false, document.Has("shouldNotExist"));
+            Assert.AreEqual(true, document.Has("foo3.bar.baz"));
+            Assert.AreEqual(false, document.Has("foo3.bar.baz.shouldNotExist"));
             Assert.AreEqual(true, document.Has("bar.baz1"));
             Assert.AreEqual(true, document.Has("bar.baz2"));
             Assert.AreEqual(true, document.Has("bar.baz2[0]"));
             Assert.AreEqual(true, document.Has("bar.baz2[1]"));
             Assert.AreEqual(true, document.Has("bar.baz2[2]"));
             Assert.AreEqual(false, document.Has("bar.baz2[3]"));
-            Assert.AreEqual(false, document.Has("should_not_exist"));
+            Assert.AreEqual(false, document.Has("bar.shouldNotExist.foo"));
+            Assert.AreEqual(false, document.Has("bar.shouldNotExist.foo.bar"));
+            Assert.AreEqual(false, document.Has("shouldNotexist.bar"));
+            Assert.AreEqual(false, document.Has("shouldNotexist.bar.baz"));
         }
         
         [Test()]

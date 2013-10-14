@@ -46,11 +46,16 @@
     <Compile Include="DateTimeFormat.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="DocumentSettings.cs" />
+    <Compile Include="Exceptions\NonExistingFieldException.cs" />
+    <Compile Include="Exceptions\NullFieldException.cs" />
     <Compile Include="MergeOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

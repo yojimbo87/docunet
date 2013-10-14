@@ -50,9 +50,9 @@ namespace Docunet.Tests
             Assert.AreEqual("test value string 2", document1.String("bar.baz2"));
             
             Assert.AreEqual(document1.String("foo1"), document2.String("foo1"));
-            Assert.AreEqual(null, document2.String("foo2"));
+            Assert.AreEqual(false, document2.Has("foo2"));
             Assert.AreEqual(document1.String("bar.baz1"), document2.String("bar.baz1"));
-            Assert.AreEqual(null, document2.String("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("bar.baz2"));
         }
         
         [Test()]
@@ -72,9 +72,9 @@ namespace Docunet.Tests
             Assert.AreEqual("test value string 2", document1.String("bar.baz2"));
             
             Assert.AreEqual(document1.String("foo1"), document2.String("foo1"));
-            Assert.AreEqual(null, document2.String("foo2"));
+            Assert.AreEqual(false, document2.Has("foo2"));
             Assert.AreEqual(document1.String("bar.baz1"), document2.String("bar.baz1"));
-            Assert.AreEqual(null, document2.String("bar.baz2"));
+            Assert.AreEqual(false, document2.Has("bar.baz2"));
         }
         
         [Test()]

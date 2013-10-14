@@ -615,9 +615,9 @@ namespace Docunet.Tests
                 .Drop("bar.baz2");
                       
             Assert.AreEqual("test string value 1", document.String("foo1"));
-            Assert.AreEqual(null, document.String("foo2"));
+            Assert.AreEqual(false, document.Has("foo2"));
             Assert.AreEqual("test value string 1", document.String("bar.baz1"));
-            Assert.AreEqual(null, document.String("bar.baz2"));
+            Assert.AreEqual(false, document.Has("bar.baz2"));
         }
         
         [Test()]
@@ -628,6 +628,7 @@ namespace Docunet.Tests
             var objectList = new List<Dummy>();
             
             var document = new Document()
+                .Object("null", null)
                 .Bool("bool", true)
                 .Byte("byte", 123)
                 .Short("short", 12345)
@@ -655,7 +656,7 @@ namespace Docunet.Tests
                 .List("nested.stringList", stringList)
                 .List("nested.objectList", objectList);
             
-            Assert.AreEqual(null, document.Type("shouldNotExist"));
+            Assert.AreEqual(typeof(Nullable), document.Type("null"));
             Assert.AreEqual(typeof(bool), document.Type("bool"));
             Assert.AreEqual(typeof(byte), document.Type("byte"));
             Assert.AreEqual(typeof(short), document.Type("short"));

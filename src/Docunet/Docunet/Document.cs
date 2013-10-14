@@ -346,6 +346,11 @@ namespace Docunet
                     if (embeddedDocument.ContainsKey(currentField))
                     {
                         embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        
+                        if (embeddedDocument == null)
+                        {
+                            return null;
+                        }
                     }
                     else
                     {
@@ -386,7 +391,15 @@ namespace Docunet
             }
             else
             {
-                return ((IList)fieldObject[fieldName])[int.Parse(arrayContent)];
+                var collection = ((IList)fieldObject[fieldName]);
+                var index = int.Parse(arrayContent);
+                
+                if (collection.Count > index)
+                {
+                    return collection[index];
+                }
+                
+                return null;
             }
         }
         
@@ -761,6 +774,27 @@ namespace Docunet
                         return true;
                     }
                 }
+            }
+            
+            return false;
+        }
+        
+        public bool Has(string fieldPath, Type type)
+        {
+            var field = GetField(fieldPath);
+            
+            if (field != null)
+            {
+                var fieldType = field.GetType();
+                
+                if (fieldType == type)
+                {
+                    return true;
+                }
+            }
+            else if ((field == null) && (type == typeof(Nullable)))
+            {
+                return true;
             }
             
             return false;

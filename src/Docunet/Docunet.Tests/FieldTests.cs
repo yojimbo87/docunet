@@ -571,6 +571,37 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_check_presence_of_document_fields_with_specific_type()
+        {
+            var document = new Document()
+                .String("foo1", "test string value")
+                .List("foo2", new List<string> { "one", "two", "three" })
+                .Object("foo3.bar.baz", null)
+                .String("bar.baz1", "test value string")
+                .List("bar.baz2", new List<string> { "one", "two", "three" });
+            
+            Assert.AreEqual(true, document.Has("foo1", typeof(string)));
+            Assert.AreEqual(true, document.Has("foo2", typeof(List<string>)));
+            Assert.AreEqual(true, document.Has("foo2[0]", typeof(string)));
+            Assert.AreEqual(true, document.Has("foo2[1]", typeof(string)));
+            Assert.AreEqual(true, document.Has("foo2[2]", typeof(string)));
+            Assert.AreEqual(false, document.Has("foo2[3]", typeof(string)));
+            Assert.AreEqual(false, document.Has("shouldNotExist", typeof(object)));
+            Assert.AreEqual(true, document.Has("foo3.bar.baz", typeof(Nullable)));
+            Assert.AreEqual(false, document.Has("foo3.bar.baz.shouldNotExist", typeof(object)));
+            Assert.AreEqual(true, document.Has("bar.baz1", typeof(string)));
+            Assert.AreEqual(true, document.Has("bar.baz2", typeof(List<string>)));
+            Assert.AreEqual(true, document.Has("bar.baz2[0]", typeof(string)));
+            Assert.AreEqual(true, document.Has("bar.baz2[1]", typeof(string)));
+            Assert.AreEqual(true, document.Has("bar.baz2[2]", typeof(string)));
+            Assert.AreEqual(false, document.Has("bar.baz2[3]", typeof(string)));
+            Assert.AreEqual(false, document.Has("bar.shouldNotExist.foo", typeof(object)));
+            Assert.AreEqual(false, document.Has("bar.shouldNotExist.foo.bar", typeof(object)));
+            Assert.AreEqual(false, document.Has("shouldNotexist.bar", typeof(object)));
+            Assert.AreEqual(false, document.Has("shouldNotexist.bar.baz", typeof(object)));
+        }
+        
+        [Test()]
         public void Should_drop_fields()
         {
             var document = new Document()

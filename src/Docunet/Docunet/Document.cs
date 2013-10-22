@@ -1191,7 +1191,14 @@ namespace Docunet
             
             foreach (string field in fields)
             {
-                document.Drop(field);
+                try
+                {
+                    document.Drop(field);
+                }
+                catch(Exception e)
+                {
+                    // fail silently if the field doesn't exist
+                }
             }
             
             return document;

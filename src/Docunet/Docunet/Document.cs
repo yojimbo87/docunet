@@ -347,7 +347,7 @@ namespace Docunet
                     {
                         embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
                         
-                        // if some of the parent fields doesn't exist
+                        // if current field document is null - break cycle and throw exception
                         if (embeddedDocument == null)
                         {
                             break;
@@ -390,7 +390,7 @@ namespace Docunet
             {
                 return fieldObject[fieldName];
             }
-            else
+            else if (arrayContent != "*")
             {
                 var collection = ((IList)fieldObject[fieldName]);
                 var index = int.Parse(arrayContent);
@@ -402,6 +402,8 @@ namespace Docunet
                 
                 throw new IndexOutOfRangeException("Index in field '" + fieldName + "' is out of range.");
             }
+            
+            throw new Exception("Invalid array index value.");
         }
         
         #endregion
@@ -619,8 +621,11 @@ namespace Docunet
             return this;
         }
         
-        private void SetField(string fieldPath, object inputObject)
+        private void SetField(string fieldPath, object value)
         {
+            var currentField = "";
+            var arrayContent = "";
+            
             if (fieldPath.Contains("."))
             {
                 var fields = fieldPath.Split('.');
@@ -629,29 +634,42 @@ namespace Docunet
 
                 foreach (var field in fields)
                 {
+                    currentField = field;
+                    arrayContent = "";
+                    
+                    if (field.Contains("["))
+                    {
+                        var firstIndex = field.IndexOf('[');
+                        var lastIndex = field.IndexOf(']');
+                        
+                        arrayContent = field.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                        currentField = field.Substring(0, firstIndex);
+                    }
+                    
                     if (iteration == fields.Length)
                     {
-                        if (embeddedDocument.ContainsKey(field))
-                        {
-                            embeddedDocument[field] = inputObject;
-                        }
-                        else
-                        {
-                            embeddedDocument.Add(field, inputObject);
-                        }
+                        SetFieldValue(currentField, arrayContent, embeddedDocument, value);
                         
                         break;
                     }
 
-                    if (embeddedDocument.ContainsKey(field))
+                    if (embeddedDocument.ContainsKey(currentField))
                     {
-                        embeddedDocument = (Document)embeddedDocument[field];
+                        embeddedDocument = (Document)GetFieldValue(currentField, arrayContent, embeddedDocument);
+                        
+                        // embedded document is null - it needs to be created
+                        if (embeddedDocument == null)
+                        {
+                            var tempDocument = new Document();
+                            embeddedDocument.Add(currentField, tempDocument);
+                            embeddedDocument = tempDocument;
+                        }
                     }
+                    // document which contains the field doesn't exist create it first
                     else
                     {
-                        // if document which contains the field doesn't exist create it first
                         var tempDocument = new Document();
-                        embeddedDocument.Add(field, tempDocument);
+                        embeddedDocument.Add(currentField, tempDocument);
                         embeddedDocument = tempDocument;
                     }
 
@@ -660,13 +678,58 @@ namespace Docunet
             }
             else
             {
-                if (this.ContainsKey(fieldPath))
+                currentField = fieldPath;
+                
+                if (fieldPath.Contains("["))
                 {
-                    this[fieldPath] = inputObject;
+                    var firstIndex = fieldPath.IndexOf('[');
+                    var lastIndex = fieldPath.IndexOf(']');
+                    
+                    arrayContent = fieldPath.Substring(firstIndex + 1, lastIndex - firstIndex - 1);
+                    currentField = fieldPath.Substring(0, firstIndex);
+                }
+
+                SetFieldValue(currentField, arrayContent, this, value);
+            }
+        }
+        
+        private void SetFieldValue(string fieldName, string arrayContent, Document fieldObject, object value)
+        {
+            // add new field or replace existing one
+            if (arrayContent == "")
+            {
+                if (fieldObject.ContainsKey(fieldName))
+                {
+                    fieldObject[fieldName] = value;
                 }
                 else
                 {
-                    this.Add(fieldPath, inputObject);
+                    fieldObject.Add(fieldName, value);
+                }
+            }
+            // add new collection item or replace existing one
+            else
+            {
+                var collection = ((IList)fieldObject[fieldName]);
+
+                // add new item to collection
+                if (arrayContent == "*")
+                {
+                    collection.Add(value);
+                }
+                // replace existing item in collection
+                else
+                {
+                    var index = int.Parse(arrayContent);
+                    
+                    if ((index >= 0) && (collection.Count > index))
+                    {
+                        collection[index] = value;
+                        
+                        return;
+                    }
+                    
+                    throw new IndexOutOfRangeException("Index in field '" + fieldName + "' is out of range.");
                 }
             }
         }

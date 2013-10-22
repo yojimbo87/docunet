@@ -468,6 +468,69 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_set_replace_insert_and_get_array_values()
+        {
+            var document = new Document()
+                .List("foo1", new List<string> { "on", "two" })
+                .List("bar1.baz", new List<string> { "one", "to" })
+                .List("foo2", new List<Document>
+                {
+                     new Document()
+                         .String("foo", "foo string value")
+                         .Int("bar.baz", 12345),
+                     new Document()
+                         .String("foo", "foo2 string value")
+                         .Int("bar.baz", 2)
+                })
+                .List("bar2.baz", new List<Document>
+                {
+                     new Document()
+                         .String("foo", "foo1 string value")
+                         .Int("bar.baz", 1),
+                     new Document()
+                         .String("foo", "foo stringoe value")
+                         .Int("bar.baz", 22)
+                });
+            
+            document.String("foo1[0]", "one");
+            document.String("foo1[*]", "three");
+            document.String("bar1.baz[1]", "two");
+            document.String("bar1.baz[*]", "three");
+            document.String("foo2[0].foo", "foo1 string value");
+            document.Int("foo2[0].bar.baz", 1);
+            document.Docunet("foo2[*]",
+                new Document()
+                    .String("foo", "foo3 string value")
+                    .Int("bar.baz", 3)
+            );
+            document.String("bar2.baz[1].foo", "foo2 string value");
+            document.Int("bar2.baz[1].bar.baz", 2);
+            document.Docunet("bar2.baz[*]",
+                new Document()
+                    .String("foo", "foo3 string value")
+                    .Int("bar.baz", 3)
+            );
+            
+            var list1 = new List<string> { "one", "two", "three" };
+            var list2 = new List<Document> 
+            { 
+                new Document()
+                     .String("foo", "foo1 string value")
+                     .Int("bar.baz", 1),
+                 new Document()
+                     .String("foo", "foo2 string value")
+                     .Int("bar.baz", 2),
+                 new Document()
+                     .String("foo", "foo3 string value")
+                     .Int("bar.baz", 3)
+            };
+            Assert.AreEqual(list1, document.List<string>("foo1"));
+            Assert.AreEqual(list1, document.List<string>("bar1.baz"));
+            Assert.AreEqual(list2, document.List<Document>("foo2"));
+            Assert.AreEqual(list2, document.List<Document>("bar2.baz"));
+        }
+        
+        [Test()]
         public void Should_convert_field_types()
         {
             var dateUtcNow = DateTime.UtcNow;

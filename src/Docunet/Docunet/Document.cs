@@ -1195,7 +1195,7 @@ namespace Docunet
                 {
                     document.Drop(field);
                 }
-                catch(Exception e)
+                catch(Exception exception)
                 {
                     // fail silently if the field doesn't exist
                 }
@@ -1218,7 +1218,7 @@ namespace Docunet
                 {
                     document.SetField(field, GetField(field));
                 }
-                catch(Exception e)
+                catch(Exception exception)
                 {
                     // fail silently if the field doesn't exist
                 }

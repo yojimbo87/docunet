@@ -1214,7 +1214,14 @@ namespace Docunet
             
             foreach (string field in fields)
             {
-                document.SetField(field, GetField(field));
+                try
+                {
+                    document.SetField(field, GetField(field));
+                }
+                catch(Exception e)
+                {
+                    // fail silently if the field doesn't exist
+                }
             }
             
             return document;

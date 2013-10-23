@@ -684,6 +684,24 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_drop_array_items()
+        {
+            var document = new Document()
+                .List("foo1", new List<string> { "one", "two", "three" })
+                .List("bar1.baz", new List<string> { "one", "two", "three" });
+            
+            document
+                .Drop("foo1[2]")
+                .Drop("bar1.baz[0]");
+            
+            var list1 = new List<string> { "one", "two" };
+            var list2 = new List<string> { "two", "three" };
+            
+            Assert.AreEqual(list1, document.List<string>("foo1"));
+            Assert.AreEqual(list2, document.List<string>("bar1.baz"));
+        }
+        
+        [Test()]
         public void Should_retrieve_type_of_fields()
         {
             var dummy = new Dummy();

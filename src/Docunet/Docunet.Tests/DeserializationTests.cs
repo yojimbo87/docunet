@@ -159,19 +159,19 @@ namespace Docunet.Tests
             {
                 new Document()
                     .String("foo", "one")
-                    .Docunet("bar", new Document()
+                    .Object("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 1)
                     ),
                 new Document()
                     .String("foo", "two")
-                    .Docunet("bar", new Document()
+                    .Object("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 2)
                     ),
                 new Document()
                     .String("foo", "three")
-                    .Docunet("bar", new Document()
+                    .Object("bar", new Document()
                               .List<int>("foo", new List<int> { 1, 2, 3 })
                               .Int("bar", 3)
                     )

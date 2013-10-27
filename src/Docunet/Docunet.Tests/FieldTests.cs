@@ -206,9 +206,9 @@ namespace Docunet.Tests
                 .String("bar.baz", "test value string");
             
             var document = new Document()
-                .Docunet("doc", doc);
+                .Object("doc", doc);
             
-            Assert.AreEqual(doc, document.Docunet("doc"));
+            Assert.AreEqual(doc, document.Object("doc"));
         }
         
         [Test()]
@@ -219,11 +219,11 @@ namespace Docunet.Tests
             doc.Add("bar.baz", "test value string");
             
             var document = new Document()
-                .Docunet("doc", doc);
+                .Object("doc", doc);
             
             var parsedDoc = Document.ToDocument(doc);
             
-            Assert.AreEqual(parsedDoc, document.Docunet("doc"));
+            Assert.AreEqual(parsedDoc, document.Object<Document>("doc"));
         }
         
         [Test()]
@@ -276,11 +276,11 @@ namespace Docunet.Tests
             var doc2 = Document.ToDocument(dummy2);
             
             var document = new Document()
-                .Docunet("foo", dummy1)
-                .Docunet("bar.baz", dummy2);
+                .Object("foo", Document.ToDocument(dummy1))
+                .Object("bar.baz", Document.ToDocument(dummy2));
             
-            Assert.AreEqual(doc1, document.Docunet("foo"));
-            Assert.AreEqual(doc2, document.Docunet("bar.baz"));
+            Assert.AreEqual(doc1, document.Object<Document>("foo"));
+            Assert.AreEqual(doc2, document.Object<Document>("bar.baz"));
             
             var stringList = document.List<string>("bar.baz.StringList");
             var objectList = document.List<Document>("bar.baz.ObjectList");
@@ -498,14 +498,14 @@ namespace Docunet.Tests
             document.String("bar1.baz[*]", "three");
             document.String("foo2[0].foo", "foo1 string value");
             document.Int("foo2[0].bar.baz", 1);
-            document.Docunet("foo2[*]",
+            document.Object("foo2[*]",
                 new Document()
                     .String("foo", "foo3 string value")
                     .Int("bar.baz", 3)
             );
             document.String("bar2.baz[1].foo", "foo2 string value");
             document.Int("bar2.baz[1].bar.baz", 2);
-            document.Docunet("bar2.baz[*]",
+            document.Object("bar2.baz[*]",
                 new Document()
                     .String("foo", "foo3 string value")
                     .Int("bar.baz", 3)

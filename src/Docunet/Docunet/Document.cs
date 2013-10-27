@@ -235,10 +235,10 @@ namespace Docunet
         /// Gets document object value of specific field.
         /// </summary>
         /// <param name="fieldPath">Path to the field in document.</param>
-        public Document Docunet(string fieldPath)
+        /*public Document Docunet(string fieldPath)
         {
             return (Document)GetField(fieldPath);
-        }
+        }*/
         
         /// <summary> 
         /// Gets enum value of specific field.
@@ -567,32 +567,13 @@ namespace Docunet
         }
         
         /// <summary> 
-        /// Sets generic object value to specific field.
+        /// Sets document or generic object value to specific field.
         /// </summary>
         /// <param name="fieldPath">Path to the field in document.</param>
         /// <param name="value">Value to be saved in specified field.</param>
         public Document Object<T>(string fieldPath, T value)
         {
             SetField(fieldPath, value);
-            
-            return this;
-        }
-        
-        /// <summary> 
-        /// Sets document object value to specific field.
-        /// </summary>
-        /// <param name="fieldPath">Path to the field in document.</param>
-        /// <param name="value">Value to be saved in specified field.</param>
-        public Document Docunet<T>(string fieldPath, T value)
-        {
-            if (value is Document)
-            {
-                SetField(fieldPath, value);
-            }
-            else
-            {
-                SetField(fieldPath, ToDocument<T>(value));
-            }
             
             return this;
         }
@@ -700,11 +681,11 @@ namespace Docunet
             {
                 if (fieldObject.ContainsKey(fieldName))
                 {
-                    fieldObject[fieldName] = value;
+                    fieldObject[fieldName] = ParseObject(value);
                 }
                 else
                 {
-                    fieldObject.Add(fieldName, value);
+                    fieldObject.Add(fieldName, ParseObject(value));
                 }
             }
             // add new collection item or replace existing one
@@ -715,7 +696,7 @@ namespace Docunet
                 // add new item to collection
                 if (arrayContent == "*")
                 {
-                    collection.Add(value);
+                    collection.Add(ParseObject(value));
                 }
                 // replace existing item in collection
                 else
@@ -724,13 +705,25 @@ namespace Docunet
                     
                     if ((index >= 0) && (collection.Count > index))
                     {
-                        collection[index] = value;
+                        collection[index] = ParseObject(value);
                         
                         return;
                     }
                     
                     throw new IndexOutOfRangeException("Index in field '" + fieldName + "' is out of range.");
                 }
+            }
+        }
+        
+        private object ParseObject(object value)
+        {
+            if (value is Dictionary<string, object>)
+            {
+                return ToDocument(value);
+            }
+            else
+            {
+                return value;
             }
         }
         

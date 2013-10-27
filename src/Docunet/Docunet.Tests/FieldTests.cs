@@ -168,7 +168,7 @@ namespace Docunet.Tests
                 .Object("bar.baz", 123);
             
             Assert.AreEqual(null, document.Object("foo"));
-            Assert.AreEqual(123, document.Object("bar.baz"));
+            Assert.AreEqual(123, document.Object<int>("bar.baz"));
         }
         
         [Test()]
@@ -223,7 +223,7 @@ namespace Docunet.Tests
             
             var parsedDoc = Document.ToDocument(doc);
             
-            Assert.AreEqual(parsedDoc, document.Object<Document>("doc"));
+            Assert.AreEqual(parsedDoc, document.Object("doc"));
         }
         
         [Test()]
@@ -279,8 +279,8 @@ namespace Docunet.Tests
                 .Object("foo", Document.ToDocument(dummy1))
                 .Object("bar.baz", Document.ToDocument(dummy2));
             
-            Assert.AreEqual(doc1, document.Object<Document>("foo"));
-            Assert.AreEqual(doc2, document.Object<Document>("bar.baz"));
+            Assert.AreEqual(doc1, document.Object("foo"));
+            Assert.AreEqual(doc2, document.Object("bar.baz"));
             
             var stringList = document.List<string>("bar.baz.StringList");
             var objectList = document.List<Document>("bar.baz.ObjectList");

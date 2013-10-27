@@ -146,7 +146,7 @@ namespace Docunet.Tests
             
             Assert.AreEqual(document2.String("Foo"), nestedDummy.Foo);
             Assert.AreEqual(document2.Int("Bar"), nestedDummy.Bar);
-            Assert.AreEqual(document2.Object("Baz"), nestedDummy.Baz);
+            Assert.AreEqual(document2.Object<Dummy>("Baz"), nestedDummy.Baz);
             Assert.AreEqual(document2.List<string>("StringList"), nestedDummy.StringList);
             Assert.AreEqual(document2.List<Dummy>("ObjectList"), nestedDummy.ObjectList);
         }

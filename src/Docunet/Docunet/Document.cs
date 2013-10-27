@@ -214,12 +214,12 @@ namespace Docunet
         }
         
         /// <summary> 
-        /// Gets object type value of specific field.
+        /// Gets document value of specific field.
         /// </summary>
         /// <param name="fieldPath">Path to the field in document.</param>
-        public object Object(string fieldPath)
+        public Document Object(string fieldPath)
         {
-            return (object)GetField(fieldPath);
+            return (Document)GetField(fieldPath);
         }
         
         /// <summary> 

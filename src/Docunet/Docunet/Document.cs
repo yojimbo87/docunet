@@ -303,7 +303,7 @@ namespace Docunet
                         collection = ((List<object>)data).Select(System.Convert.ToDecimal).ToList() as List<T>;
                         break;
                     case "DateTime":
-                        var list = ((IEnumerable)data).Cast<object>().ToList();;
+                        var list = ((IEnumerable)data).Cast<object>().ToList();
                         
                         if (list.Count > 0)
                         {
@@ -778,11 +778,11 @@ namespace Docunet
                 
                 return true;
             }
-            catch (NonExistingFieldException exception)
+            catch (NonExistingFieldException)
             {
                 return false;
             }
-            catch (IndexOutOfRangeException exception)
+            catch (IndexOutOfRangeException)
             {
                 return false;
             }
@@ -815,11 +815,11 @@ namespace Docunet
                 
                 return false;
             }
-            catch (NonExistingFieldException exception)
+            catch (NonExistingFieldException)
             {
                 return false;
             }
-            catch (IndexOutOfRangeException exception)
+            catch (IndexOutOfRangeException)
             {
                 return false;
             }
@@ -844,11 +844,11 @@ namespace Docunet
                     return false;
                 }
             }
-            catch (NonExistingFieldException exception)
+            catch (NonExistingFieldException)
             {
                 return true;
             }
-            catch (IndexOutOfRangeException exception)
+            catch (IndexOutOfRangeException)
             {
                 return true;
             }
@@ -1255,7 +1255,7 @@ namespace Docunet
                 {
                     document.Drop(field);
                 }
-                catch(Exception exception)
+                catch(Exception)
                 {
                     // fail silently if the field doesn't exist
                 }
@@ -1278,7 +1278,7 @@ namespace Docunet
                 {
                     document.SetField(field, GetField(field));
                 }
-                catch(Exception exception)
+                catch(Exception)
                 {
                     // fail silently if the field doesn't exist
                 }

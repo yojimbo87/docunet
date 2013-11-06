@@ -161,6 +161,48 @@ namespace Docunet.Tests
         }
         
         [Test()]
+        public void Should_set_long_array_and_get_datetime_array()
+        {
+            var dateUtcNow = DateTime.UtcNow;
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan span = (dateUtcNow.ToUniversalTime() - unixEpoch);
+            
+            var document = new Document()
+                .List<long>("array", new List<long>
+                {
+                    (long)span.TotalSeconds,
+                    (long)span.TotalSeconds,
+                    (long)span.TotalSeconds
+                });
+            
+            var array = document.List<DateTime>("array");
+            
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), array[0].ToString("yyyy-MM-dd HH:mm:ss"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), array[1].ToString("yyyy-MM-dd HH:mm:ss"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss"), array[2].ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+        
+        [Test()]
+        public void Should_set_string_array_and_get_datetime_array()
+        {
+            var dateUtcNow = DateTime.UtcNow;
+            
+            var document = new Document()
+                .List<string>("array", new List<string>
+                {
+                    dateUtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"),
+                    dateUtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"),
+                    dateUtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK")
+                });
+            
+            var array = document.List<DateTime>("array");
+            
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffK"), array[0].ToString("yyyy-MM-dd HH:mm:ss.fffK"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffK"), array[1].ToString("yyyy-MM-dd HH:mm:ss.fffK"));
+            Assert.AreEqual(dateUtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffK"), array[2].ToString("yyyy-MM-dd HH:mm:ss.fffK"));
+        }
+        
+        [Test()]
         public void Should_get_and_set_object_values()
         {
             var document = new Document()

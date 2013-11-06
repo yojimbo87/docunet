@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="DateTimeFormat.cs" />
     <Compile Include="Document.cs" />
+    <Compile Include="DocumentAnalyzer.cs" />
     <Compile Include="DocumentSettings.cs" />
     <Compile Include="Exceptions\NonExistingFieldException.cs" />
     <Compile Include="Exceptions\NullFieldException.cs" />
@@ -52,10 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="Exceptions" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Exceptions" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
